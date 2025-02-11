@@ -1,0 +1,239 @@
+-- Create the call_flags table
+CREATE TABLE call_flags (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    flag_name VARCHAR(255) NOT NULL
+);
+
+-- Create the calls_flags_link table
+CREATE TABLE calls_flags_link (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    call_id INT,
+    call_flag_id INT,
+    FOREIGN KEY (call_id) REFERENCES calls(id),
+    FOREIGN KEY (call_flag_id) REFERENCES call_flags(id)
+);
+
+-- Alter the call_flags table to add the display_order field
+ALTER TABLE call_flags
+ADD display_order INT UNSIGNED;
+
+-- Add an index for sorting on the display_order field
+CREATE INDEX idx_display_order ON call_flags (display_order);
+
+Flags:
+
+Using the structure of the call_flags table, which is: 
+TABLE `call_flags` (
+  `id` int(11) NOT NULL,
+  `parent_id` int(11) NOT NULL DEFAULT 0,
+  `flag_name` varchar(255) NOT NULL,
+  `display_order` int(10) UNSIGNED DEFAULT NULL,
+  `specify` int(11) NOT NULL DEFAULT 0,
+  `followup` int(11) NOT NULL DEFAULT 0
+)
+I want to create insert statements for the following tree of items: 
+
+Spam
+New Customer
+    New job *
+        Crack
+        Bend 
+        Recon
+        Other       
+            Specify
+    Other *
+        Specify
+Existing Customer
+    New job *
+        Crack
+        Bend 
+        Recon
+        Other       
+            Specify
+    Other *
+        Specify
+    Status check
+Other N/A
+    Specify
+
+
+The indention of the items signifies what the parent id of the item is.  for example, Spam item doesn't have any children.
+ New Customer has two children, as denoted by the indention. 
+ To do this, you will need to insert into the id field, do not use LAST_INSERT_ID.
+For example other N/A has a child item of specify.  This specify child item should have the parent_id value of the id field in the call_flags table.
+If and item has a * next to it's name then it should have the 1 inserted into the followup field.
+
+Spam
+New Customer
+    New job *
+        Crack
+        Bend 
+        Recon
+        Other       
+            Specify
+    Other *
+        Specify
+Existing Customer
+    New job *
+        Crack
+        Bend 
+        Recon
+        Other       
+            Specify
+    Other *
+        Specify
+    Status check
+Other N/A
+    Specify
+
+
+Coming:
+    Today
+    Tomorrow
+    1 day
+    2 days
+    3 days  
+    Within week
+
+    -- Insert statements for the tree of items
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (1, 0, 'Spam', NULL, 0, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (2, 0, 'New Customer', NULL, 0, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (3, 2, 'New job', NULL, 0, 1);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (4, 3, 'Crack', NULL, 0, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (5, 3, 'Bend', NULL, 0, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (6, 3, 'Recon', NULL, 0, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (7, 3, 'Other', NULL, 0, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (8, 7, 'Specify', NULL, 1, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (9, 2, 'Other', NULL, 0, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (10, 9, 'Specify', NULL, 1, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (11, 2, 'Existing Customer', NULL, 0, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (12, 11, 'New job', NULL, 0, 1);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (13, 12, 'Crack', NULL, 0, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (14, 12, 'Bend', NULL, 0, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (15, 12, 'Recon', NULL, 0, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (16, 12, 'Other', NULL, 0, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (17, 16, 'Specify', NULL, 1, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (18, 11, 'Other', NULL, 0, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (19, 18, 'Specify', NULL, 1, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (20, 11, 'Status check', NULL, 0, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (21, 0, 'Other N/A', NULL, 0, 0);
+
+    INSERT INTO call_flags (id, parent_id, flag_name, display_order, specify, followup)
+    VALUES (22, 21, 'Specify', NULL, 1, 0);
+
+    -- Insert statements for the photo_types table
+    INSERT INTO photo_types (description)
+    VALUES ('Job');
+
+    INSERT INTO photo_types (description)
+    VALUES ('Job Item');
+
+    INSERT INTO photo_types (description)
+    VALUES ('Location');
+
+    INSERT INTO photo_types (description)
+    VALUES ('Customer');
+
+
+    -- Insert statements for the customer table
+    INSERT INTO customers (id, first_name, last_name, email)
+    VALUES (1, 'John', 'Doe', 'johndoe@example.com');
+
+    INSERT INTO customers (id, first_name, last_name, email)
+    VALUES (2, 'Jane', 'Smith', 'janesmith@example.com');
+
+    INSERT INTO customers (id, first_name, last_name, email)
+    VALUES (3, 'Michael', 'Johnson', 'michaeljohnson@example.com');
+
+    INSERT INTO customers (id, first_name, last_name, email)
+    VALUES (4, 'Emily', 'Brown', 'emilybrown@example.com');
+
+    INSERT INTO customers (id, first_name, last_name, email)
+    VALUES (5, 'David', 'Taylor', 'davidtaylor@example.com');
+
+    INSERT INTO customers (id, first_name, last_name, email)
+    VALUES (6, 'Olivia', 'Miller', 'oliviamiller@example.com');
+
+    INSERT INTO customers (id, first_name, last_name, email)
+    VALUES (7, 'James', 'Anderson', 'jamesanderson@example.com');
+
+    INSERT INTO customers (id, first_name, last_name, email)
+    VALUES (8, 'Sophia', 'Wilson', 'sophiawilson@example.com');
+
+    INSERT INTO customers (id, first_name, last_name, email)
+    VALUES (9, 'Daniel', 'Thomas', 'danielthomas@example.com');
+
+    INSERT INTO customers (id, first_name, last_name, email)
+    VALUES (10, 'Ava', 'Martinez', 'avamartinez@example.com');
+
+    -- Insert statements for the customer_phones table
+INSERT INTO customer_phones (customer_id, phone_number)
+VALUES (1, '5551234567');
+
+INSERT INTO customer_phones (customer_id, phone_number)
+VALUES (1, '5555678901');
+
+INSERT INTO customer_phones (customer_id, phone_number)
+VALUES (2, '5559876543');
+
+INSERT INTO customer_phones (customer_id, phone_number)
+VALUES (3, '5554321098');
+
+INSERT INTO customer_phones (customer_id, phone_number)
+VALUES (4, '5558765432');
+
+INSERT INTO customer_phones (customer_id, phone_number)
+VALUES (5, '5552345678');
+
+INSERT INTO customer_phones (customer_id, phone_number)
+VALUES (6, '5556789012');
+
+INSERT INTO customer_phones (customer_id, phone_number)
+VALUES (7, '5553456789');
+
+INSERT INTO customer_phones (customer_id, phone_number)
+VALUES (8, '5557890123');
+
+INSERT INTO customer_phones (customer_id, phone_number)
+VALUES (9, '5554567890');

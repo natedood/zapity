@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Call Screen</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-mobile/1.4.5/jquery.mobile.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mobile/1.4.5/jquery.mobile.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script>
+        var testCallsJSON = [{"id":16,"phone_number":4444444448,"caller_id_name":"Ava Martin","call_datetime":"2025-02-01 23:00:00","customer_id":1600},{"id":15,"phone_number":3333333336,"caller_id_name":"James Anderson","call_datetime":"2025-02-01 22:00:00","customer_id":1500},{"id":30,"phone_number":9999999999,"caller_id_name":"Lucas Davis","call_datetime":"2025-02-01 21:30:00","customer_id":3000},{"id":14,"phone_number":2222222224,"caller_id_name":"Sophia Thompson","call_datetime":"2025-02-01 21:00:00","customer_id":1400},{"id":29,"phone_number":8888888888,"caller_id_name":"Scarlett Martin","call_datetime":"2025-02-01 20:30:00","customer_id":2900},{"id":13,"phone_number":1111111112,"caller_id_name":"Daniel Wilson","call_datetime":"2025-02-01 20:00:00","customer_id":1300},{"id":28,"phone_number":7777777776,"caller_id_name":"Sebastian Anderson","call_datetime":"2025-02-01 19:30:00","customer_id":2800},{"id":12,"phone_number":9999999990,"caller_id_name":"Olivia Davis","call_datetime":"2025-02-01 19:00:00","customer_id":1200},{"id":27,"phone_number":6666666664,"caller_id_name":"Elizabeth Thompson","call_datetime":"2025-02-01 18:30:00","customer_id":2700},{"id":11,"phone_number":8888888888,"caller_id_name":"Alex Johnson","call_datetime":"2025-02-01 18:00:00","customer_id":1100}];
+
+        $(document).on("pagecreate", function() {
+            $("#searchcalls").on("click", function() {
+                var phone_number = $("#phone_number").val();
+                var found = false;
+                for (var i = 0; i < testCallsJSON.length; i++) {
+                    if (testCallsJSON[i].phone_number == phone_number) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    alert("Call found");
+                } else {
+                    alert("Call not found");
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div data-role="page">
+        <div data-role="header">
+            <h1>Call Screen</h1>
+        </div>
+        <div data-role="content">
+            <div>
+                <div class="input-group">
+                    <input type="tel" name="phone_number" id="phone_number" class="form-control" placeholder="Enter phone number">
+                    <div class="input-group-append">
+                        <button id="searchcalls" class="btn btn-primary" type="button"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <div data-role="footer">
+            <h4>&nbsp;</h4>
+        </div>
+    </div>
+</body>
+</html>
+            
