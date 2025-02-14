@@ -4,7 +4,7 @@ include 'db_connect.php';
 // Your code here
 // Decode the JSON data from the AJAX POST request
 $data = json_decode($_POST['data'], true);
-
+ 
 // Extract data from the decoded JSON
 $phone_number = $data['phone_number'];
 $flags = $data['flags'];
