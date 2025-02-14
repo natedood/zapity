@@ -1,7 +1,6 @@
 <?php
 include 'db_connect.php';
 
-// Your code here
 // Decode the JSON data from the AJAX POST request
 $data = json_decode($_POST['data'], true);
  
