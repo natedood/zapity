@@ -1,20 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!--
+      Setting the page title and viewport to ensure responsiveness on mobile devices.
+    -->
     <title>Call Screen</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!--
+      Include jQuery Mobile CSS for mobile-friendly UI components.
+      Include Bootstrap CSS for layout and additional styling.
+      Include FontAwesome for icon support.
+    -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-mobile/1.4.5/jquery.mobile.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <!--
+      Include jQuery library and jQuery Mobile JS.
+    -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mobile/1.4.5/jquery.mobile.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
     <script>
-        // test call data 
+        // -------------------------
+        // TEST DATA SETUP
+        // -------------------------
+        // Array of test call data simulating call records. 
         var testCallsJSON = [{"id":16,"phone_number":4444444448,"caller_id_name":"Ava Martin","call_datetime":"2025-02-01 23:00:00","customer_id":1600},{"id":15,"phone_number":3333333336,"caller_id_name":"James Anderson","call_datetime":"2025-02-01 22:00:00","customer_id":1500},{"id":30,"phone_number":9999999999,"caller_id_name":"Lucas Davis","call_datetime":"2025-02-01 21:30:00","customer_id":3000},{"id":14,"phone_number":2222222224,"caller_id_name":"Sophia Thompson","call_datetime":"2025-02-01 21:00:00","customer_id":1400},{"id":29,"phone_number":8888888888,"caller_id_name":"Scarlett Martin","call_datetime":"2025-02-01 20:30:00","customer_id":2900},{"id":13,"phone_number":1111111112,"caller_id_name":"Daniel Wilson","call_datetime":"2025-02-01 20:00:00","customer_id":1300},{"id":28,"phone_number":7777777776,"caller_id_name":"Sebastian Anderson","call_datetime":"2025-02-01 19:30:00","customer_id":2800},{"id":12,"phone_number":9999999990,"caller_id_name":"Olivia Davis","call_datetime":"2025-02-01 19:00:00","customer_id":1200},{"id":27,"phone_number":6666666664,"caller_id_name":"Elizabeth Thompson","call_datetime":"2025-02-01 18:30:00","customer_id":2700},{"id":11,"phone_number":8888888888,"caller_id_name":"Alex Johnson","call_datetime":"2025-02-01 18:00:00","customer_id":1100}];
-        // test call flag data
+        
+        // Array of test call flags. 
+        // Each flag has properties: id, parent_id (for hierarchical grouping), flag_name, specify (indicating if extra details are needed), and followup (indicating if a follow-up is required).
         var callFlags = [{"id":1,"parent_id":0,"flag_name":"Spam","display_order":null,"specify":0,"followup":0},{"id":2,"parent_id":0,"flag_name":"New Customer","display_order":null,"specify":0,"followup":0},{"id":3,"parent_id":2,"flag_name":"New job","display_order":null,"specify":0,"followup":1},{"id":4,"parent_id":3,"flag_name":"Crack","display_order":null,"specify":0,"followup":0},{"id":5,"parent_id":3,"flag_name":"Bend","display_order":null,"specify":0,"followup":0},{"id":6,"parent_id":3,"flag_name":"Recon","display_order":null,"specify":0,"followup":0},{"id":7,"parent_id":3,"flag_name":"Other","display_order":null,"specify":0,"followup":0},{"id":8,"parent_id":7,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":9,"parent_id":2,"flag_name":"Other","display_order":null,"specify":0,"followup":0},{"id":10,"parent_id":9,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":11,"parent_id":0,"flag_name":"Existing Customer","display_order":null,"specify":0,"followup":0},{"id":12,"parent_id":11,"flag_name":"New job","display_order":null,"specify":0,"followup":1},{"id":13,"parent_id":12,"flag_name":"Crack","display_order":null,"specify":0,"followup":0},{"id":14,"parent_id":12,"flag_name":"Bend","display_order":null,"specify":0,"followup":0},{"id":15,"parent_id":12,"flag_name":"Recon","display_order":null,"specify":0,"followup":0},{"id":16,"parent_id":12,"flag_name":"Other","display_order":null,"specify":0,"followup":0},{"id":17,"parent_id":16,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":18,"parent_id":11,"flag_name":"Other","display_order":null,"specify":0,"followup":0},{"id":19,"parent_id":18,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":20,"parent_id":11,"flag_name":"Status check","display_order":null,"specify":0,"followup":0},{"id":21,"parent_id":0,"flag_name":"Other N/A","display_order":null,"specify":0,"followup":0},{"id":22,"parent_id":21,"flag_name":"Specify","display_order":null,"specify":1,"followup":0}];
     </script>
+    
     <script>
+        // --------------------------------------------------
+        // Function: createCheckbox
+        // Purpose: Generates HTML for a single checkbox element with a label.
+        //           If the flag object's "specify" property equals 1,
+        //           it also creates a hidden text input for further details.
+        // Parameters: flag - an object representing a call flag.
+        // Returns: A string containing the generated HTML.
+        // --------------------------------------------------
         function createCheckbox(flag) {
             let checkboxHtml = `<div class="form-check">
                 <input class="form-check-input" type="checkbox" value="${flag.id}" id="flag_${flag.id}" data-followup="${flag.followup}">
@@ -22,6 +50,7 @@
                     ${flag.flag_name}
                 </label>
             </div>`;
+            // If flag requires additional details ("specify" equals 1), add a hidden text input.
             if (flag.specify === 1) {
                 checkboxHtml += `<div id="specify_${flag.id}" style="display: none; margin-left: 20px;">
                                     <input type="text" class="form-control" placeholder="Specify details">
@@ -30,15 +59,33 @@
             return checkboxHtml;
         }
 
+        // --------------------------------------------------
+        // Function: renderCallFlags
+        // Purpose: Recursively generates HTML for a list of call flags,
+        //          including any child flags for parent-child hierarchies.
+        // Parameters:
+        //   flags - an array of flag objects.
+        //   parentId - the parent flag id to filter by (default is 0 for top-level).
+        //   level - an indentation level used for styling nested flags.
+        // Returns: A string containing the generated HTML.
+        // --------------------------------------------------
         function renderCallFlags(flags, parentId = 0, level = 0) {
             let html = '';
+            // Filter flags by the current parent id.
             flags.filter(flag => flag.parent_id === parentId).forEach(flag => {
+                // Create a div containing the checkbox. Use left margin for nesting.
                 html += `<div style="margin-left: ${level * 20}px;">${createCheckbox(flag)}</div>`;
+                // Create a container for child flags (initially hidden).
                 html += `<div id="children_${flag.id}" style="display: none;">${renderCallFlags(flags, flag.id, level + 1)}</div>`;
             });
             return html;
         }
 
+        // --------------------------------------------------
+        // Function: toggleChildren
+        // Purpose: Toggles the visibility of child flags when a parent flag is changed.
+        // Parameters: flagId - the numeric id of the parent flag.
+        // --------------------------------------------------
         function toggleChildren(flagId) {
             const childrenDiv = document.getElementById(`children_${flagId}`);
             if (childrenDiv) {
@@ -46,83 +93,143 @@
             }
         }
 
-        // This function shows the follow-up date input if any checked checkbox has followup == 1
+        // --------------------------------------------------
+        // Function: updateFollowupVisibility
+        // Purpose: Checks if any selected checkbox has the followup property set to 1.
+        //          If so, it reveals the follow-up date input field; otherwise, hides it.
+        // --------------------------------------------------
         function updateFollowupVisibility() {
             let show = false;
+            // Loop through all checked checkboxes and verify if any require follow-up.
             document.querySelectorAll('.form-check-input:checked').forEach(function(checkbox) {
                 if (checkbox.getAttribute('data-followup') === "1") {
                     show = true;
                 }
             });
+            // Toggle the follow-up date container based on the follow-up requirement.
             document.getElementById('followupDateContainer').style.display = show ? 'block' : 'none';
         }
     </script>
 </head>
 <body>
+    <!--
+      jQuery Mobile page container.
+    -->
     <div data-role="page">
+        <!--
+          Header section for the call screen.
+        -->
         <div data-role="header">
             <h1>Call Screen</h1>
         </div>
+        <!--
+          Content section contains the form elements.
+        -->
         <div data-role="content">
             <div>
+                <!--
+                  Input group for entering a phone number.
+                  Uses Bootstrap classes for styling.
+                -->
                 <div class="input-group">
                     <input type="tel" name="phone_number" id="phone_number" 
                         class="form-control" placeholder="Enter phone number">
                     <div class="input-group-append">
+                        <!--
+                          Search button with a FontAwesome search icon.
+                        -->
                         <button id="searchcalls" class="btn btn-primary" 
                             type="button"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
+                
+                <!--
+                  Container to render the call flags checkboxes.
+                  This container's innerHTML is filled by the renderCallFlags function.
+                -->
                 <div id="callFlagsContainer" class="mt-3"></div>
+                
                 <script>
+                    // Render the call flags inside the container.
                     document.getElementById('callFlagsContainer').innerHTML = renderCallFlags(callFlags);
-
+                    
+                    // Add event listeners to all checkboxes for change events.
+                    // On change: toggle children, show/hide specify input, and update follow-up input.
                     document.querySelectorAll('.form-check-input').forEach(checkbox => {
                         checkbox.addEventListener('change', function () {
+                            // Toggle the display of child flags (if any) based on this checkbox's value.
                             toggleChildren(this.value);
+                            // Check if there is a specify input linked to this flag.
                             const specifyDiv = document.getElementById(`specify_${this.value}`);
                             if (specifyDiv) {
+                                // Display the specify input if the checkbox is checked, otherwise hide it.
                                 specifyDiv.style.display = this.checked ? 'block' : 'none';
                             }
+                            // Update the follow-up date input visibility based on follow-up flags.
                             updateFollowupVisibility();
                         });
                     });
                 </script>
 
-                <!-- New followup date input (initially hidden) -->
+                <!--
+                  Follow-Up Date Input:
+                  This date input is displayed only if a flag with followup == 1 is selected.
+                  Uses Bootstrap's form-control styling and jQuery Mobile's data-role.
+                -->
                 <div id="followupDateContainer" style="display: none; margin-top: 20px;">
                     <label for="followupDate">Follow-Up Date</label>
                     <input type="date" id="followupDate" class="form-control" data-role="date">
                 </div>
                 
+                <!--
+                  Action buttons for saving or cancelling the form.
+                -->
                 <button id="saveButton" class="btn btn-success mt-3">Save</button>
                 <button id="cancelButton" class="btn btn-danger mt-3">Cancel</button>
-
             </div>
+            
+            <!--
+              Script for clearing the form data.
+              This function resets the phone number input,
+              unchecks all call flags, hides any specify inputs as well as child flag containers,
+              and updates the follow-up visibility.
+            -->
             <script>
                 function clearFormData() {
                     document.getElementById('phone_number').value = '';
                     document.querySelectorAll('.form-check-input').forEach(checkbox => {
                         checkbox.checked = false;
+                        // Hide and reset any specify input fields that are linked to each checkbox.
                         const specifyDiv = document.getElementById(`specify_${checkbox.value}`);
                         if (specifyDiv) {
                             specifyDiv.style.display = 'none';
                             specifyDiv.querySelector('input').value = '';
                         }
+                        // Also hide any child flag containers.
                         const childrenDiv = document.getElementById(`children_${checkbox.value}`);
                         if (childrenDiv) {
                             childrenDiv.style.display = 'none';
                         }
                     });
+                    // Update visibility of the follow-up date based on the cleared data.
                     updateFollowupVisibility();
                 }
-
+                // When the Cancel button is clicked, call clearFormData.
                 document.getElementById('cancelButton').addEventListener('click', clearFormData);
             </script>
+            
+            <!--
+              Script for saving the form data.
+              This collects the phone number, checked flags,
+              and any specify input values associated with flags.
+              The resulting data is logged as JSON.
+            -->
             <script>
                 function saveFormData() {
+                    // Remove any non-digit characters from the phone number.
                     const phoneNumber = document.getElementById('phone_number').value.replace(/[^\d]/g, '');
                     const selectedFlags = [];
+                    // Loop through all checked checkboxes to collect flag IDs and specify values.
                     document.querySelectorAll('.form-check-input:checked').forEach(checkbox => {
                         const flagId = checkbox.value;
                         const specifyInput = document.getElementById(`specify_${flagId}`);
@@ -130,25 +237,42 @@
                         selectedFlags.push({ id: flagId, specify: specifyValue });
                     });
 
+                    // Create an object with the collected form data.
                     const formData = {
                         phone_number: phoneNumber,
                         flags: selectedFlags
                     };
 
+                    // For now, simply log the form data in JSON format.
                     console.log(JSON.stringify(formData));
                 }
-
+                // When the Save button is clicked, call saveFormData.
                 document.getElementById('saveButton').addEventListener('click', saveFormData);
             </script>
         </div>
+        
+        <!--
+          Footer section of the page (currently empty).
+        -->
         <div data-role="footer">
             <h4>&nbsp;</h4>
         </div>
     </div>
+    
+    <!--
+      Additional scripts to handle phone number formatting and searching for calls.
+    -->
     <script>
+        // --------------------------------------------------
+        // Function: formatPhoneNumber
+        // Purpose: Formats a text input value into a US phone number format.
+        //          Examples: "123" remains "123", "1234567" becomes "(123) 456-7".
+        // Parameters: value - a string representing the phone number.
+        // Returns: The formatted phone number string.
+        // --------------------------------------------------
         function formatPhoneNumber(value) {
             if (!value) return value;
-            const phoneNumber = value.replace(/[^\d]/g, '');
+            const phoneNumber = value.replace(/[^\d]/g, ''); // Remove non-digit chars.
             const phoneNumberLength = phoneNumber.length;
             if (phoneNumberLength < 4) return phoneNumber;
             if (phoneNumberLength < 7) {
@@ -157,19 +281,36 @@
             return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
         }
 
+        // --------------------------------------------------
+        // Function: searchAllCalls
+        // Purpose: Logs a message for demo purposes indicating it is searching.
+        // Parameters: phoneNumber - a string containing a clean phone number.
+        // --------------------------------------------------
         function searchAllCalls(phoneNumber) {
             console.log(`Searching for calls with phone number: ${phoneNumber}`);
         }
 
+        // --------------------------------------------------
+        // Event Listener: Phone Number Input
+        // Purpose: Formats the phone number field as the user types.
+        //          When exactly 10 digits are entered, it triggers a search.
+        // --------------------------------------------------
         document.getElementById('phone_number').addEventListener('input', function (e) {
             const formattedPhoneNumber = formatPhoneNumber(e.target.value);
             e.target.value = formattedPhoneNumber;
             const phoneNumber = e.target.value.replace(/[^\d]/g, '');
             if (phoneNumber.length === 10) {
+                // Call search function when a valid 10-digit number is entered.
                 searchAllCalls(phoneNumber);
             }
         });
 
+        // --------------------------------------------------
+        // Event Listener: Search Button
+        // Purpose: When clicked, retrieves the phone number value (only digits)
+        //          and calls the searchAllCalls function if 10 digits are present.
+        //          Otherwise, alerts the user.
+        // --------------------------------------------------
         document.getElementById('searchcalls').addEventListener('click', function () {
             const phoneNumber = document.getElementById('phone_number').value.replace(/[^\d]/g, '');
             if (phoneNumber.length === 10) {
@@ -179,12 +320,14 @@
             }
         });
 
+        // --------------------------------------------------
+        // Function: getCallFlags
+        // Purpose: Placeholder that returns the callFlags array.
+        //          In a real application, this might retrieve flags from a database.
+        // --------------------------------------------------
         function getCallFlags() {
-            // eventually create a callFlags array from the database
             return callFlags;
         }
-
-
     </script>
 </body>
 </html>
