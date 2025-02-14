@@ -9,25 +9,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mobile/1.4.5/jquery.mobile.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script>
+        // test call data 
         var testCallsJSON = [{"id":16,"phone_number":4444444448,"caller_id_name":"Ava Martin","call_datetime":"2025-02-01 23:00:00","customer_id":1600},{"id":15,"phone_number":3333333336,"caller_id_name":"James Anderson","call_datetime":"2025-02-01 22:00:00","customer_id":1500},{"id":30,"phone_number":9999999999,"caller_id_name":"Lucas Davis","call_datetime":"2025-02-01 21:30:00","customer_id":3000},{"id":14,"phone_number":2222222224,"caller_id_name":"Sophia Thompson","call_datetime":"2025-02-01 21:00:00","customer_id":1400},{"id":29,"phone_number":8888888888,"caller_id_name":"Scarlett Martin","call_datetime":"2025-02-01 20:30:00","customer_id":2900},{"id":13,"phone_number":1111111112,"caller_id_name":"Daniel Wilson","call_datetime":"2025-02-01 20:00:00","customer_id":1300},{"id":28,"phone_number":7777777776,"caller_id_name":"Sebastian Anderson","call_datetime":"2025-02-01 19:30:00","customer_id":2800},{"id":12,"phone_number":9999999990,"caller_id_name":"Olivia Davis","call_datetime":"2025-02-01 19:00:00","customer_id":1200},{"id":27,"phone_number":6666666664,"caller_id_name":"Elizabeth Thompson","call_datetime":"2025-02-01 18:30:00","customer_id":2700},{"id":11,"phone_number":8888888888,"caller_id_name":"Alex Johnson","call_datetime":"2025-02-01 18:00:00","customer_id":1100}];
-
-        $(document).on("pagecreate", function() {
-            $("#searchcalls").on("click", function() {
-                var phone_number = $("#phone_number").val();
-                var found = false;
-                for (var i = 0; i < testCallsJSON.length; i++) {
-                    if (testCallsJSON[i].phone_number == phone_number) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (found) {
-                    alert("Call found");
-                } else {
-                    alert("Call not found");
-                }
-            });
-        });
+        // test call flag data
+        var callFlags = [{"id":1,"parent_id":0,"flag_name":"Spam","display_order":null,"specify":0,"followup":0},{"id":2,"parent_id":0,"flag_name":"New Customer","display_order":null,"specify":0,"followup":0},{"id":3,"parent_id":2,"flag_name":"New job","display_order":null,"specify":0,"followup":1},{"id":4,"parent_id":3,"flag_name":"Crack","display_order":null,"specify":0,"followup":0},{"id":5,"parent_id":3,"flag_name":"Bend","display_order":null,"specify":0,"followup":0},{"id":6,"parent_id":3,"flag_name":"Recon","display_order":null,"specify":0,"followup":0},{"id":7,"parent_id":3,"flag_name":"Other","display_order":null,"specify":0,"followup":0},{"id":8,"parent_id":7,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":9,"parent_id":2,"flag_name":"Other","display_order":null,"specify":0,"followup":0},{"id":10,"parent_id":9,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":11,"parent_id":0,"flag_name":"Existing Customer","display_order":null,"specify":0,"followup":0},{"id":12,"parent_id":11,"flag_name":"New job","display_order":null,"specify":0,"followup":1},{"id":13,"parent_id":12,"flag_name":"Crack","display_order":null,"specify":0,"followup":0},{"id":14,"parent_id":12,"flag_name":"Bend","display_order":null,"specify":0,"followup":0},{"id":15,"parent_id":12,"flag_name":"Recon","display_order":null,"specify":0,"followup":0},{"id":16,"parent_id":12,"flag_name":"Other","display_order":null,"specify":0,"followup":0},{"id":17,"parent_id":16,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":18,"parent_id":11,"flag_name":"Other","display_order":null,"specify":0,"followup":0},{"id":19,"parent_id":18,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":20,"parent_id":11,"flag_name":"Status check","display_order":null,"specify":0,"followup":0},{"id":21,"parent_id":0,"flag_name":"Other N/A","display_order":null,"specify":0,"followup":0},{"id":22,"parent_id":21,"flag_name":"Specify","display_order":null,"specify":1,"followup":0}];
     </script>
 </head>
 <body>
@@ -38,18 +23,146 @@
         <div data-role="content">
             <div>
                 <div class="input-group">
-                    <input type="tel" name="phone_number" id="phone_number" class="form-control" placeholder="Enter phone number">
+                    <input type="tel" name="phone_number" id="phone_number" 
+                        class="form-control" placeholder="Enter phone number">
                     <div class="input-group-append">
-                        <button id="searchcalls" class="btn btn-primary" type="button"><i class="fas fa-search"></i></button>
+                        <button id="searchcalls" class="btn btn-primary" 
+                            type="button"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
-                
+                <div id="callFlagsContainer" class="mt-3"></div>
+                <script>
+                    function createCheckbox(flag) {
+                        let checkboxHtml = `<div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="${flag.id}" id="flag_${flag.id}">
+                                    <label class="form-check-label" for="flag_${flag.id}">
+                                        ${flag.flag_name}
+                                    </label>
+                                </div>`;
+                        if (flag.specify === 1) {
+                            checkboxHtml += `<div id="specify_${flag.id}" style="display: none; margin-left: 20px;">
+                                                <input type="text" class="form-control" placeholder="Specify details">
+                                             </div>`;
+                        }
+                        return checkboxHtml;
+                    }
+
+                    function renderCallFlags(flags, parentId = 0, level = 0) {
+                        let html = '';
+                        flags.filter(flag => flag.parent_id === parentId).forEach(flag => {
+                            html += `<div style="margin-left: ${level * 20}px;">${createCheckbox(flag)}</div>`;
+                            html += `<div id="children_${flag.id}" style="display: none;">${renderCallFlags(flags, flag.id, level + 1)}</div>`;
+                        });
+                        return html;
+                    }
+
+                    function toggleChildren(flagId) {
+                        const childrenDiv = document.getElementById(`children_${flagId}`);
+                        if (childrenDiv) {
+                            childrenDiv.style.display = childrenDiv.style.display === 'none' ? 'block' : 'none';
+                        }
+                    }
+
+                    document.getElementById('callFlagsContainer').innerHTML = renderCallFlags(callFlags);
+
+                    document.querySelectorAll('.form-check-input').forEach(checkbox => {
+                        checkbox.addEventListener('change', function () {
+                            toggleChildren(this.value);
+                            const specifyDiv = document.getElementById(`specify_${this.value}`);
+                            if (specifyDiv) {
+                                specifyDiv.style.display = this.checked ? 'block' : 'none';
+                            }
+                        });
+                    });
+                </script>
             </div>
+            <button id="saveButton" class="btn btn-success mt-3">Save</button>
+            <button id="cancelButton" class="btn btn-danger mt-3">Cancel</button>
+            <script>
+                function clearFormData() {
+                    document.getElementById('phone_number').value = '';
+                    document.querySelectorAll('.form-check-input').forEach(checkbox => {
+                        checkbox.checked = false;
+                        const specifyDiv = document.getElementById(`specify_${checkbox.value}`);
+                        if (specifyDiv) {
+                            specifyDiv.style.display = 'none';
+                            specifyDiv.querySelector('input').value = '';
+                        }
+                        const childrenDiv = document.getElementById(`children_${checkbox.value}`);
+                        if (childrenDiv) {
+                            childrenDiv.style.display = 'none';
+                        }
+                    });
+                }
+
+                document.getElementById('cancelButton').addEventListener('click', clearFormData);
+            </script>
+            <script>
+                function saveFormData() {
+                    const phoneNumber = document.getElementById('phone_number').value.replace(/[^\d]/g, '');
+                    const selectedFlags = [];
+                    document.querySelectorAll('.form-check-input:checked').forEach(checkbox => {
+                        const flagId = checkbox.value;
+                        const specifyInput = document.getElementById(`specify_${flagId}`);
+                        const specifyValue = specifyInput ? specifyInput.querySelector('input').value : null;
+                        selectedFlags.push({ id: flagId, specify: specifyValue });
+                    });
+
+                    const formData = {
+                        phone_number: phoneNumber,
+                        flags: selectedFlags
+                    };
+
+                    console.log(JSON.stringify(formData));
+                }
+
+                document.getElementById('saveButton').addEventListener('click', saveFormData);
+            </script>
         </div>
         <div data-role="footer">
             <h4>&nbsp;</h4>
         </div>
     </div>
+    <script>
+        function formatPhoneNumber(value) {
+            if (!value) return value;
+            const phoneNumber = value.replace(/[^\d]/g, '');
+            const phoneNumberLength = phoneNumber.length;
+            if (phoneNumberLength < 4) return phoneNumber;
+            if (phoneNumberLength < 7) {
+                return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+            }
+            return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+        }
+
+        function searchAllCalls(phoneNumber) {
+            console.log(`Searching for calls with phone number: ${phoneNumber}`);
+        }
+
+        document.getElementById('phone_number').addEventListener('input', function (e) {
+            const formattedPhoneNumber = formatPhoneNumber(e.target.value);
+            e.target.value = formattedPhoneNumber;
+            const phoneNumber = e.target.value.replace(/[^\d]/g, '');
+            if (phoneNumber.length === 10) {
+                searchAllCalls(phoneNumber);
+            }
+        });
+
+        document.getElementById('searchcalls').addEventListener('click', function () {
+            const phoneNumber = document.getElementById('phone_number').value.replace(/[^\d]/g, '');
+            if (phoneNumber.length === 10) {
+                searchAllCalls(phoneNumber);
+            } else {
+                alert('Please enter a valid 10-digit phone number.');
+            }
+        });
+
+        function getCallFlags() {
+            // eventually create a callFlags array from the database
+            return callFlags;
+        }
+
+
+    </script>
 </body>
 </html>
-            
