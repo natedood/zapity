@@ -257,17 +257,66 @@
             -->
             <script>
                 function saveFormData() {
-                    // Remove any non-digit characters from the phone number.
-                    const phoneNumber = document.getElementById('phone_number').value.replace(/[^\d]/g, '');
+                    // Remove non-digit characters from the phone number.
+                    const phoneNumberField = document.getElementById('phone_number');
+                    const phoneNumber = phoneNumberField.value.replace(/[^\d]/g, '');
+
+                    // Validate the phone number has exactly 10 digits.
+                    if (phoneNumber.length !== 10) {
+                        let errorDiv = document.getElementById('errorAlert');
+                        if (!errorDiv) {
+                            errorDiv = document.createElement('div');
+                            errorDiv.id = 'errorAlert';
+                            errorDiv.className = 'alert alert-danger mt-3';
+                            errorDiv.innerText = 'Please enter a valid 10-digit phone number prior to submitting.';
+                            phoneNumberField.parentNode.insertBefore(errorDiv, phoneNumberField);
+                        } else {
+                            errorDiv.innerText = 'Please enter a valid 10-digit phone number prior to submitting.';
+                            errorDiv.style.display = 'block';
+                        }
+                        return;
+                    } else {
+                        // Hide any existing error message.
+                        let errorDiv = document.getElementById('errorAlert');
+                        if (errorDiv) {
+                            errorDiv.style.display = 'none';
+                        }
+                    }
+
+                    // Validate that at least one call flag checkbox is selected.
+                    const selectedFlagsElements = document.querySelectorAll('.form-check-input:checked');
+                    if (selectedFlagsElements.length === 0) {
+                        let errorDiv = document.getElementById('errorAlert');
+                        if (!errorDiv) {
+                            errorDiv = document.createElement('div');
+                            errorDiv.id = 'errorAlert';
+                            errorDiv.className = 'alert alert-danger mt-3';
+                            errorDiv.innerText = 'Please select at least one call flag before submitting.';
+                            // Insert the error alert above the call flags container.
+                            const callFlagsContainer = document.getElementById('callFlagsContainer');
+                            callFlagsContainer.parentNode.insertBefore(errorDiv, callFlagsContainer);
+                        } else {
+                            errorDiv.innerText = 'Please select at least one call flag before submitting.';
+                            errorDiv.style.display = 'block';
+                        }
+                        return;
+                    } else {
+                        // Hide any existing error message if flags are selected.
+                        let errorDiv = document.getElementById('errorAlert');
+                        if (errorDiv) {
+                            errorDiv.style.display = 'none';
+                        }
+                    }
+
+                    // Process checked flags.
                     const selectedFlags = [];
-                    // Loop through all checked checkboxes to collect flag IDs and specify values.
-                    document.querySelectorAll('.form-check-input:checked').forEach(checkbox => {
+                    selectedFlagsElements.forEach(checkbox => {
                         const flagId = checkbox.value;
                         const specifyInput = document.getElementById(`specify_${flagId}`);
                         const specifyValue = specifyInput ? specifyInput.querySelector('input').value : null;
                         selectedFlags.push({ id: flagId, specify: specifyValue });
                     });
-                    
+
                     // Retrieve the follow-up date and call notes values.
                     const followupDate = document.getElementById('followupDate').value;
                     const callNotes = document.getElementById('callnotes').value;
@@ -283,6 +332,7 @@
                     // Log the form data in JSON format.
                     console.log(JSON.stringify(formData));
                 }
+                
                 // When the Save button is clicked, call saveFormData.
                 document.getElementById('saveButton').addEventListener('click', saveFormData);
             </script>
