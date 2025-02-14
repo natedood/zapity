@@ -5,10 +5,10 @@ include 'db_connect.php';
 $data = json_decode($_POST['data'], true);
  
 // Extract data from the decoded JSON
-$phone_number = $data['phone_number'];
-$flags = $data['flags'];
+$phone_number  = $data['phone_number'];
+$flags         = $data['flags'];
 $followup_date = $data['followup_date'];
-$call_notes = $data['call_notes'];
+$call_notes    = $data['call_notes'];
 
 // Insert into the calls table
 $call_datetime = date('Y-m-d H:i:s');
@@ -21,8 +21,13 @@ $stmt->close();
 // Loop over the flags array and insert into the calls_flags_link table
 foreach ($flags as $flag) {
     $call_flag_id = $flag['id'];
-    $stmt = $conn->prepare("INSERT INTO calls_flags_link (call_id, call_flag_id) VALUES (?, ?)");
-    $stmt->bind_param("ii", $call_id, $call_flag_id);
+    // If specify value is provided, use it; otherwise, insert null.
+    $specify = isset($flag['specify']) ? $flag['specify'] : null;
+    
+    // Prepare the statement including the 'specify' column.
+    $stmt = $conn->prepare("INSERT INTO calls_flags_link (call_id, call_flag_id, specify) VALUES (?, ?, ?)");
+    // Bind parameters: call_id (integer), call_flag_id (integer), specify (string or null)
+    $stmt->bind_param("iis", $call_id, $call_flag_id, $specify);
     $stmt->execute();
     $stmt->close();
 }
