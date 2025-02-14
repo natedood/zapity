@@ -194,40 +194,54 @@
                 </div>
                 
                 <!--
-                  Action buttons for saving or cancelling the form.
+                  Notes Textarea:
+                  This is an optional field for call notes. It spans full width
+                  and is 3 rows tall using Bootstrap's form-control.
+                -->
+                <textarea id="callnotes" class="form-control mb-3" rows="3" placeholder="Call notes" name="callnotes"></textarea>
+                
+                <!--
+                  Action buttons for saving or resetting the form.
                 -->
                 <button id="saveButton" class="btn btn-success mt-3">Save</button>
-                <button id="cancelButton" class="btn btn-danger mt-3">Cancel</button>
+                <button id="resetButton" class="btn btn-danger mt-3">Reset</button>
             </div>
             
             <!--
               Script for clearing the form data.
               This function resets the phone number input,
               unchecks all call flags, hides any specify inputs as well as child flag containers,
+              clears the follow-up date input, clears the call notes textarea,
               and updates the follow-up visibility.
             -->
             <script>
                 function clearFormData() {
+                    // Clear the phone number field.
                     document.getElementById('phone_number').value = '';
+                    // Clear all checkboxes, specify inputs, and hide child containers.
                     document.querySelectorAll('.form-check-input').forEach(checkbox => {
                         checkbox.checked = false;
-                        // Hide and reset any specify input fields that are linked to each checkbox.
                         const specifyDiv = document.getElementById(`specify_${checkbox.value}`);
                         if (specifyDiv) {
                             specifyDiv.style.display = 'none';
                             specifyDiv.querySelector('input').value = '';
                         }
-                        // Also hide any child flag containers.
                         const childrenDiv = document.getElementById(`children_${checkbox.value}`);
                         if (childrenDiv) {
                             childrenDiv.style.display = 'none';
                         }
                     });
-                    // Update visibility of the follow-up date based on the cleared data.
+                    // Clear the follow-up date input.
+                    document.getElementById('followupDate').value = '';
+                    // Hide the follow-up date container.
+                    document.getElementById('followupDateContainer').style.display = 'none';
+                    // Clear the call notes textarea.
+                    document.getElementById('callnotes').value = '';
+                    // Update the follow-up date visibility.
                     updateFollowupVisibility();
                 }
-                // When the Cancel button is clicked, call clearFormData.
-                document.getElementById('cancelButton').addEventListener('click', clearFormData);
+                // When the Reset button is clicked, call clearFormData.
+                document.getElementById('resetButton').addEventListener('click', clearFormData);
             </script>
             
             <!--
