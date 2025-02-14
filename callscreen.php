@@ -1,9 +1,16 @@
 <?php
+// Enable error reporting for debugging (remove or disable for production!)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 include 'db_connect.php';
 
 // Decode the JSON data from the AJAX POST request
 $data = json_decode($_POST['data'], true);
- 
+if (!$data) {
+    die("Error decoding JSON: " . json_last_error_msg());
+}
+
 // Extract data from the decoded JSON
 $phone_number  = $data['phone_number'];
 $flags         = $data['flags'];
@@ -13,8 +20,13 @@ $call_notes    = $data['call_notes'];
 // Insert into the calls table
 $call_datetime = date('Y-m-d H:i:s');
 $stmt = $conn->prepare("INSERT INTO calls (phone_number, call_datetime, notes) VALUES (?, ?, ?)");
+if (!$stmt) {
+    die("Prepare failed (calls): " . $conn->error);
+}
 $stmt->bind_param("sss", $phone_number, $call_datetime, $call_notes);
-$stmt->execute();
+if (!$stmt->execute()) {
+    die("Execute failed (calls): " . $stmt->error);
+}
 $call_id = $stmt->insert_id;
 $stmt->close();
 
@@ -24,11 +36,29 @@ foreach ($flags as $flag) {
     // If specify value is provided, use it; otherwise, insert null.
     $specify = isset($flag['specify']) ? $flag['specify'] : null;
     
-    // Prepare the statement including the 'specify' column.
     $stmt = $conn->prepare("INSERT INTO calls_flags_link (call_id, call_flag_id, specify) VALUES (?, ?, ?)");
-    // Bind parameters: call_id (integer), call_flag_id (integer), specify (string or null)
+    if (!$stmt) {
+        die("Prepare failed (calls_flags_link): " . $conn->error);
+    }
     $stmt->bind_param("iis", $call_id, $call_flag_id, $specify);
-    $stmt->execute();
+    if (!$stmt->execute()) {
+        die("Execute failed (calls_flags_link): " . $stmt->error);
+    }
+    $stmt->close();
+}
+
+// If there is a valid followup_date, insert a row into the todos table.
+if (!empty($followup_date)) {
+    // Set a default todo_type_id (adjust as needed; this type id is for a call follow up).
+    $todo_type_id = 1;
+    $stmt = $conn->prepare("INSERT INTO todos (todo_type_id, link_id, due_datetime, notes) VALUES (?, ?, ?, ?)");
+    if (!$stmt) {
+        die("Prepare failed (todos): " . $conn->error);
+    }
+    $stmt->bind_param("iiss", $todo_type_id, $call_id, $followup_date, $call_notes);
+    if (!$stmt->execute()) {
+        die("Execute failed (todos): " . $stmt->error);
+    }
     $stmt->close();
 }
 
