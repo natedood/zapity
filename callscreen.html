@@ -96,20 +96,21 @@
         // --------------------------------------------------
         // Function: updateFollowupVisibility
         // Purpose: Checks if any selected checkbox has the followup property set to 1.
-        //          If so, it reveals the follow-up date input field and sets it to tomorrow's date;
-        //          otherwise, it hides the field.
+        //          If so, it reveals the follow-up date input field, automatically
+        //          populates it with tomorrow's date, and sets the minimum allowed
+        //          date to tomorrow; otherwise, it hides the field.
         // --------------------------------------------------
         function updateFollowupVisibility() {
             let show = false;
-            // Loop through all checked checkboxes and verify if any require follow-up.
+            // Loop through all checked checkboxes to determine if any require follow-up.
             document.querySelectorAll('.form-check-input:checked').forEach(function(checkbox) {
                 if (checkbox.getAttribute('data-followup') === "1") {
                     show = true;
                 }
             });
-            // Set the display of the follow-up date container.
+            // Show or hide the follow-up date container.
             document.getElementById('followupDateContainer').style.display = show ? 'block' : 'none';
-            // If follow-up is required, automatically populate the input with tomorrow's date.
+            // If follow-up is required, automatically populate and constrain the date input.
             if (show) {
                 let tomorrow = new Date();
                 tomorrow.setDate(tomorrow.getDate() + 1);
@@ -118,7 +119,11 @@
                 let mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
                 let dd = String(tomorrow.getDate()).padStart(2, '0');
                 let nextDay = yyyy + '-' + mm + '-' + dd;
-                document.getElementById('followupDate').value = nextDay;
+                // Set the input value to tomorrow's date.
+                let followupInput = document.getElementById('followupDate');
+                followupInput.value = nextDay;
+                // Set the minimum allowed date to tomorrow's date to prevent past dates.
+                followupInput.min = nextDay;
             }
         }
     </script>
@@ -262,14 +267,20 @@
                         const specifyValue = specifyInput ? specifyInput.querySelector('input').value : null;
                         selectedFlags.push({ id: flagId, specify: specifyValue });
                     });
-
+                    
+                    // Retrieve the follow-up date and call notes values.
+                    const followupDate = document.getElementById('followupDate').value;
+                    const callNotes = document.getElementById('callnotes').value;
+                    
                     // Create an object with the collected form data.
                     const formData = {
                         phone_number: phoneNumber,
-                        flags: selectedFlags
+                        flags: selectedFlags,
+                        followup_date: followupDate,
+                        call_notes: callNotes
                     };
 
-                    // For now, simply log the form data in JSON format.
+                    // Log the form data in JSON format.
                     console.log(JSON.stringify(formData));
                 }
                 // When the Save button is clicked, call saveFormData.
