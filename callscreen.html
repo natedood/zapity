@@ -96,7 +96,8 @@
         // --------------------------------------------------
         // Function: updateFollowupVisibility
         // Purpose: Checks if any selected checkbox has the followup property set to 1.
-        //          If so, it reveals the follow-up date input field; otherwise, hides it.
+        //          If so, it reveals the follow-up date input field and sets it to tomorrow's date;
+        //          otherwise, it hides the field.
         // --------------------------------------------------
         function updateFollowupVisibility() {
             let show = false;
@@ -106,8 +107,19 @@
                     show = true;
                 }
             });
-            // Toggle the follow-up date container based on the follow-up requirement.
+            // Set the display of the follow-up date container.
             document.getElementById('followupDateContainer').style.display = show ? 'block' : 'none';
+            // If follow-up is required, automatically populate the input with tomorrow's date.
+            if (show) {
+                let tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                // Format the date as YYYY-MM-DD (required format for input type="date")
+                let yyyy = tomorrow.getFullYear();
+                let mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+                let dd = String(tomorrow.getDate()).padStart(2, '0');
+                let nextDay = yyyy + '-' + mm + '-' + dd;
+                document.getElementById('followupDate').value = nextDay;
+            }
         }
     </script>
 </head>
