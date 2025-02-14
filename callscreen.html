@@ -276,7 +276,6 @@
                         }
                         return;
                     } else {
-                        // Hide any existing error message.
                         let errorDiv = document.getElementById('errorAlert');
                         if (errorDiv) {
                             errorDiv.style.display = 'none';
@@ -287,13 +286,12 @@
                     const selectedFlagsElements = document.querySelectorAll('.form-check-input:checked');
                     if (selectedFlagsElements.length === 0) {
                         let errorDiv = document.getElementById('errorAlert');
+                        const callFlagsContainer = document.getElementById('callFlagsContainer');
                         if (!errorDiv) {
                             errorDiv = document.createElement('div');
                             errorDiv.id = 'errorAlert';
                             errorDiv.className = 'alert alert-danger mt-3';
                             errorDiv.innerText = 'Please select at least one call flag before submitting.';
-                            // Insert the error alert above the call flags container.
-                            const callFlagsContainer = document.getElementById('callFlagsContainer');
                             callFlagsContainer.parentNode.insertBefore(errorDiv, callFlagsContainer);
                         } else {
                             errorDiv.innerText = 'Please select at least one call flag before submitting.';
@@ -301,7 +299,6 @@
                         }
                         return;
                     } else {
-                        // Hide any existing error message if flags are selected.
                         let errorDiv = document.getElementById('errorAlert');
                         if (errorDiv) {
                             errorDiv.style.display = 'none';
@@ -329,8 +326,23 @@
                         call_notes: callNotes
                     };
 
-                    // Log the form data in JSON format.
-                    console.log(JSON.stringify(formData));
+                    // Send an AJAX request to callscreen.php with the JSON data.
+                    $.ajax({
+                        url: 'callscreen.php',
+                        type: 'POST',
+                        data: {
+                            data: JSON.stringify(formData)
+                        },
+                        success: function(response) {
+                            // Optionally clear the form or display a success message.
+                            console.log('Server response:', response);
+                            // For example, you could clear the form after a successful save:
+                            clearFormData();
+                        },
+                        error: function(xhr, status, error) {
+                            console.log('AJAX error:', status, error);
+                        }
+                    });
                 }
                 
                 // When the Save button is clicked, call saveFormData.

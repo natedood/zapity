@@ -18,25 +18,13 @@ $stmt->execute();
 $call_id = $stmt->insert_id;
 $stmt->close();
 
-// Insert into the call_flags table and call_flags_specify table
+// Loop over the flags array and insert into the calls_flags_link table
 foreach ($flags as $flag) {
-    $flag_id = $flag['id'];
-    $specify = $flag['specify'];
-
-    // Insert into call_flags table
-    $stmt = $conn->prepare("INSERT INTO call_flags (call_id, call_flag_id) VALUES (?, ?)");
-    $stmt->bind_param("ii", $call_id, $flag_id);
+    $call_flag_id = $flag['id'];
+    $stmt = $conn->prepare("INSERT INTO calls_flags_link (call_id, call_flag_id) VALUES (?, ?)");
+    $stmt->bind_param("ii", $call_id, $call_flag_id);
     $stmt->execute();
-    $call_flags_link_id = $stmt->insert_id;
     $stmt->close();
-
-    // If specify is not null, insert into call_flags_specify table
-    if (!is_null($specify)) {
-        $stmt = $conn->prepare("INSERT INTO call_flags_specify (call_flags_link_id, specify) VALUES (?, ?)");
-        $stmt->bind_param("is", $call_flags_link_id, $specify);
-        $stmt->execute();
-        $stmt->close();
-    }
 }
 
 // Close the database connection
