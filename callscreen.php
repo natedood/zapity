@@ -24,7 +24,7 @@ $stmt = $conn->prepare("INSERT INTO calls (phone_number, call_datetime, call_ori
 if (!$stmt) {
     die("Prepare failed (calls): " . $conn->error);
 }
-$stmt->bind_param("ssis", $phone_number, $call_datetime, $call_origin, $call_notes);
+$stmt->bind_param("ssss", $phone_number, $call_datetime, $call_origin, $call_notes);
 if (!$stmt->execute()) {
     die("Execute failed (calls): " . $stmt->error);
 }
