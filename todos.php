@@ -14,6 +14,9 @@ $scope = isset($_GET['scope']) ? intval($_GET['scope']) : 1;
 // Get the start date from the query string, default to today's date if not provided
 $start = isset($_GET['start']) ? $_GET['start'] : date('Y-m-d');
 
+// Get the type from the query string, default to 1 if not provided
+$type = isset($_GET['type']) ? intval($_GET['type']) : 1;
+
 // Prepare the SQL statement based on the scope
 if ($scope == 1) {
     // Only return todo objects where due_datetime is today's date
