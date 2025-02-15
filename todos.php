@@ -8,12 +8,30 @@ include 'db_connect.php';
 // Get the status from the query string, default to 0 if not provided
 $status = isset($_GET['status']) ? intval($_GET['status']) : 0;
 
-// Prepare the SQL statement to select from the todos table
-$stmt = $conn->prepare("SELECT * FROM todos WHERE status = ? ORDER BY due_datetime ASC");
-if (!$stmt) {
-    die("Prepare failed: " . $conn->error);
+// Get the scope from the query string, default to 1 if not provided
+$scope = isset($_GET['scope']) ? intval($_GET['scope']) : 1;
+
+// Get the start date from the query string, default to today's date if not provided
+$start = isset($_GET['start']) ? $_GET['start'] : date('Y-m-d');
+
+// Prepare the SQL statement based on the scope
+if ($scope == 1) {
+    // Only return todo objects where due_datetime is today's date
+    $stmt = $conn->prepare("SELECT * FROM todos WHERE status = ? AND DATE(due_datetime) = ? ORDER BY due_datetime ASC");
+    if (!$stmt) {
+        die("Prepare failed: " . $conn->error);
+    }
+    $stmt->bind_param("is", $status, $start);
+} else {
+    // Return the last X number of days worth of items
+    $end_date = date('Y-m-d', strtotime($start . ' + ' . $scope . ' days'));
+    $stmt = $conn->prepare("SELECT * FROM todos WHERE status = ? AND due_datetime BETWEEN ? AND ? ORDER BY due_datetime ASC");
+    if (!$stmt) {
+        die("Prepare failed: " . $conn->error);
+    }
+    $stmt->bind_param("iss", $status, $start, $end_date);
 }
-$stmt->bind_param("i", $status);
+
 if (!$stmt->execute()) {
     die("Execute failed: " . $stmt->error);
 }
