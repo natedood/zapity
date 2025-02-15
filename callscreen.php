@@ -16,14 +16,15 @@ $phone_number  = $data['phone_number'];
 $flags         = $data['flags'];
 $followup_date = $data['followup_date'];
 $call_notes    = $data['call_notes'];
+$call_origin   = $data['call_origin'];
 
-// Insert into the calls table
+// Insert into the calls table, including the call_origin field
 $call_datetime = date('Y-m-d H:i:s');
-$stmt = $conn->prepare("INSERT INTO calls (phone_number, call_datetime, notes) VALUES (?, ?, ?)");
+$stmt = $conn->prepare("INSERT INTO calls (phone_number, call_datetime, call_origin, notes) VALUES (?, ?, ?, ?)");
 if (!$stmt) {
     die("Prepare failed (calls): " . $conn->error);
 }
-$stmt->bind_param("sss", $phone_number, $call_datetime, $call_notes);
+$stmt->bind_param("ssis", $phone_number, $call_datetime, $call_origin, $call_notes);
 if (!$stmt->execute()) {
     die("Execute failed (calls): " . $stmt->error);
 }

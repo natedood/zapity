@@ -160,6 +160,27 @@
                     </div>
                 </div>
                 
+                <!-- Insert this snippet right after the phone number input group and before the call flags container -->
+                <div id="callOriginContainer" class="mt-3">
+                    <label class="d-block">Origin:</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="callOrigin" id="originIncoming" value="1" checked>
+                        <label class="form-check-label" for="originIncoming">In</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="callOrigin" id="originOutgoing" value="2">
+                        <label class="form-check-label" for="originOutgoing">Out</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="callOrigin" id="originIncomingText" value="3">
+                        <label class="form-check-label" for="originIncomingText">In Text</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="callOrigin" id="originOutgoingText" value="4">
+                        <label class="form-check-label" for="originOutgoingText">Out Text</label>
+                    </div>
+                </div>
+
                 <!--
                   Container to render the call flags checkboxes.
                   This container's innerHTML is filled by the renderCallFlags function.
@@ -171,7 +192,7 @@
                     document.getElementById('callFlagsContainer').innerHTML = renderCallFlags(callFlags);
                     
                     // Add event listeners to all checkboxes for change events.
-                    // On change: toggle children, show/hide specify input, and update follow-up input.
+                    // On change: toggle children, show/hide spescify input, and update follow-up input.
                     document.querySelectorAll('.form-check-input').forEach(checkbox => {
                         checkbox.addEventListener('change', function () {
                             // Toggle the display of child flags (if any) based on this checkbox's value.
@@ -193,6 +214,7 @@
                   This date input is displayed only if a flag with followup == 1 is selected.
                   Uses Bootstrap's form-control styling and jQuery Mobile's data-role.
                 -->
+                  <div><br/></div>
                 <div id="followupDateContainer" style="display: none; margin-top: 20px;">
                     <label for="followupDate">Follow-Up Date</label>
                     <input type="date" id="followupDate" class="form-control" data-role="date">
@@ -319,12 +341,16 @@
                     const followupDate = document.getElementById('followupDate').value;
                     const callNotes = document.getElementById('callnotes').value;
                     
+                    // Retrieve the selected call origin value.
+                    const callOrigin = document.querySelector('input[name="callOrigin"]:checked').value;
+
                     // Create an object with the collected form data.
                     const formData = {
                         phone_number: phoneNumber,
                         flags: selectedFlags,
                         followup_date: followupDate,
-                        call_notes: callNotes
+                        call_notes: callNotes,
+                        call_origin: callOrigin
                     };
 
                     // Send an AJAX request to callscreen.php with the JSON data.
