@@ -331,10 +331,12 @@
                     // Process checked flags.
                     const selectedFlags = [];
                     selectedFlagsElements.forEach(checkbox => {
-                        const flagId = checkbox.value;
-                        const specifyInput = document.getElementById(`specify_${flagId}`);
-                        const specifyValue = specifyInput ? specifyInput.querySelector('input').value : null;
-                        selectedFlags.push({ id: flagId, specify: specifyValue });
+                        if (checkbox.id.startsWith('flag_')) {
+                            const flagId = checkbox.value;
+                            const specifyInput = document.getElementById(`specify_${flagId}`);
+                            const specifyValue = specifyInput ? specifyInput.querySelector('input').value : null;
+                            selectedFlags.push({ id: flagId, specify: specifyValue });
+                        }
                     });
 
                     // Retrieve the follow-up date and call notes values.
