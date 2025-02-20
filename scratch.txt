@@ -1,10 +1,24 @@
+
+SELECT c.id, c.call_origin, c.phone_number, c.caller_id_name, c.call_datetime, c.customer_id, c.notes, c.message,
+    cf.flag_name, cf.display_order, cf.specify, cf.followup, cfl.specify AS flag_specify
+FROM calls c
+JOIN calls_flags_link cfl ON c.id = cfl.call_id
+JOIN call_flags cf ON cfl.call_flag_id = cf.id
+WHERE c.phone_number = 8172914639
+order by call_datetime desc, c.id desc;
+
+ 
+
+ALTER TABLE todos
+ADD COLUMN due_datetime DATETIME;
+
 CREATE TABLE todos (
     id INT PRIMARY KEY AUTO_INCREMENT,
     todo_type_id INT,
     link_id INT,
     notes TEXT,
     created DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated DATETIME,
+    updated DATETIME,a
     status INT DEFAULT 0,
     assigned_user_id INT
 );
@@ -53,42 +67,3 @@ ADD COLUMN specify VARCHAR(100);
   }, 
   "time": "2015-07-23T11:04:15.496-07:00"
 }
-
-
-
-
-using a similar format and includes as callscreen.php, i would like to create a service that returns current items in the todo's table from mysql.  the structure of this table is: 
-
-CREATE TABLE todos (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    todo_type_id INT,
-    link_id INT,
-    notes TEXT,
-    created DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated DATETIME,
-    status INT DEFAULT 0,
-    assigned_user_id INT,
-	due_datetime datetime
-);
-
-when this page is called, it should get all the data from the todos table where the status equals the url querystring value of status - if this is not provided, it should default to 0.  
-
-the data should be returned in asc order of the due_datetime field.
-
-date should be returned in a json format.
-
-
-please add support for a url variabled called scope.  this should be default to "1" if not specified.  if the value is "1" it should only return todo objects from the database where due_datetime is today's date.  otherwise, it should return the last X number of days.  for example, if the scope value passed is 30, it should return the last 30 days worth of items, going back starting at todays date. 
-
-please also add a query string parameter named start.  this should be defaulted to todays date.  if it is provided, then the database should be queried for al records starting at that start date, for the number of days specified in the scope parameter
-
-
-
-
-this page should use bootstrap mobile and/or jquery mobile where appropriate.  this is intended to be mobile friendly.
-
-on this page, under the header, i would like a list of items.  each row should be a checkbox followed by the 
-
-here's an example of the json that can be expected:
- 
-[{"id":2,"todo_type_id":1,"link_id":42,"notes":"followup todo test","created":"2025-02-14 16:12:12","updated":null,"status":0,"assigned_user_id":null,"due_datetime":"2025-02-15 00:00:00"},{"id":3,"todo_type_id":1,"link_id":43,"notes":"todo followup test 2\n","created":"2025-02-14 16:12:57","updated":null,"status":0,"assigned_user_id":null,"due_datetime":"2025-02-15 00:00:00"},{"id":4,"todo_type_id":1,"link_id":44,"notes":"","created":"2025-02-14 17:47:32","updated":null,"status":0,"assigned_user_id":null,"due_datetime":"2025-02-15 00:00:00"},{"id":5,"todo_type_id":1,"link_id":45,"notes":"888 test 1 ","created":"2025-02-14 18:10:38","updated":null,"status":0,"assigned_user_id":null,"due_datetime":"2025-02-15 00:00:00"}]
