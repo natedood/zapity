@@ -7,6 +7,7 @@ JOIN call_flags cf ON cfl.call_flag_id = cf.id
 WHERE c.phone_number = 8172914639
 order by call_datetime desc, c.id desc;
 
+
  
 
 ALTER TABLE todos

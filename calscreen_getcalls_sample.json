@@ -1,0 +1,398 @@
+[
+    {
+        "id": 53,
+        "call_origin": "in",
+        "phone_number": 8172914639,
+        "caller_id_name": null,
+        "call_datetime": "2025-02-20 16:12:33",
+        "customer_id": null,
+        "notes": "test specify field without parent checked",
+        "message": "",
+        "flags": [
+            {
+                "flag_name": "Specify",
+                "display_order": null,
+                "specify": 1,
+                "followup": 0,
+                "flag_specify": ""
+            }
+        ]
+    },
+    {
+        "id": 52,
+        "call_origin": "in",
+        "phone_number": 8172914639,
+        "caller_id_name": null,
+        "call_datetime": "2025-02-20 15:58:16",
+        "customer_id": null,
+        "notes": "test",
+        "message": "",
+        "flags": [
+            {
+                "flag_name": "New Customer",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "New job",
+                "display_order": null,
+                "specify": 0,
+                "followup": 1,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "Crack",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            }
+        ]
+    },
+    {
+        "id": 47,
+        "call_origin": "0",
+        "phone_number": 8172914639,
+        "caller_id_name": null,
+        "call_datetime": "2025-02-15 18:43:30",
+        "customer_id": null,
+        "notes": "test",
+        "message": "",
+        "flags": [
+            {
+                "flag_name": "New Customer",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "New job",
+                "display_order": null,
+                "specify": 0,
+                "followup": 1,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "Bend",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            }
+        ]
+    },
+    {
+        "id": 46,
+        "call_origin": "0",
+        "phone_number": 8172914639,
+        "caller_id_name": null,
+        "call_datetime": "2025-02-15 02:08:44",
+        "customer_id": null,
+        "notes": "test no followup?",
+        "message": "",
+        "flags": [
+            {
+                "flag_name": "Other N/A",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "Specify",
+                "display_order": null,
+                "specify": 1,
+                "followup": 0,
+                "flag_specify": "test"
+            }
+        ]
+    },
+    {
+        "id": 44,
+        "call_origin": "0",
+        "phone_number": 8172914639,
+        "caller_id_name": null,
+        "call_datetime": "2025-02-15 00:47:32",
+        "customer_id": null,
+        "notes": "",
+        "message": "",
+        "flags": [
+            {
+                "flag_name": "Existing Customer",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "New job",
+                "display_order": null,
+                "specify": 0,
+                "followup": 1,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "Bend",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            }
+        ]
+    },
+    {
+        "id": 43,
+        "call_origin": "0",
+        "phone_number": 8172914639,
+        "caller_id_name": null,
+        "call_datetime": "2025-02-14 23:12:57",
+        "customer_id": null,
+        "notes": "todo followup test 2\n",
+        "message": "",
+        "flags": [
+            {
+                "flag_name": "Existing Customer",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "New job",
+                "display_order": null,
+                "specify": 0,
+                "followup": 1,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "Bend",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            }
+        ]
+    },
+    {
+        "id": 42,
+        "call_origin": "0",
+        "phone_number": 8172914639,
+        "caller_id_name": null,
+        "call_datetime": "2025-02-14 23:12:12",
+        "customer_id": null,
+        "notes": "followup todo test",
+        "message": "",
+        "flags": [
+            {
+                "flag_name": "New Customer",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "New job",
+                "display_order": null,
+                "specify": 0,
+                "followup": 1,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "Recon",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            }
+        ]
+    },
+    {
+        "id": 41,
+        "call_origin": "0",
+        "phone_number": 8172914639,
+        "caller_id_name": null,
+        "call_datetime": "2025-02-14 23:05:35",
+        "customer_id": null,
+        "notes": "test for todos 1",
+        "message": "",
+        "flags": [
+            {
+                "flag_name": "New Customer",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "New job",
+                "display_order": null,
+                "specify": 0,
+                "followup": 1,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "Crack",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            }
+        ]
+    },
+    {
+        "id": 40,
+        "call_origin": "0",
+        "phone_number": 8172914639,
+        "caller_id_name": null,
+        "call_datetime": "2025-02-14 22:52:35",
+        "customer_id": null,
+        "notes": "test status check",
+        "message": "",
+        "flags": [
+            {
+                "flag_name": "Existing Customer",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "Status check",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            }
+        ]
+    },
+    {
+        "id": 39,
+        "call_origin": "0",
+        "phone_number": 8172914639,
+        "caller_id_name": null,
+        "call_datetime": "2025-02-14 22:13:55",
+        "customer_id": null,
+        "notes": "specify test 2",
+        "message": "",
+        "flags": [
+            {
+                "flag_name": "New Customer",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "New job",
+                "display_order": null,
+                "specify": 0,
+                "followup": 1,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "Bend",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "Other",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "Specify",
+                "display_order": null,
+                "specify": 1,
+                "followup": 0,
+                "flag_specify": "specify 1"
+            }
+        ]
+    },
+    {
+        "id": 38,
+        "call_origin": "0",
+        "phone_number": 8172914639,
+        "caller_id_name": null,
+        "call_datetime": "2025-02-14 22:05:19",
+        "customer_id": null,
+        "notes": "specify 1 test ",
+        "message": "",
+        "flags": [
+            {
+                "flag_name": "New Customer",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "New job",
+                "display_order": null,
+                "specify": 0,
+                "followup": 1,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "Bend",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "Recon",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "Other",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "Specify",
+                "display_order": null,
+                "specify": 1,
+                "followup": 0,
+                "flag_specify": null
+            }
+        ]
+    },
+    {
+        "id": 37,
+        "call_origin": "0",
+        "phone_number": 8172914639,
+        "caller_id_name": null,
+        "call_datetime": "2025-02-14 22:04:36",
+        "customer_id": null,
+        "notes": "test 3",
+        "message": "",
+        "flags": [
+            {
+                "flag_name": "New Customer",
+                "display_order": null,
+                "specify": 0,
+                "followup": 0,
+                "flag_specify": null
+            },
+            {
+                "flag_name": "New job",
+                "display_order": null,
+                "specify": 0,
+                "followup": 1,
+                "flag_specify": null
+            }
+        ]
+    }
+]

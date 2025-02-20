@@ -447,9 +447,9 @@
             console.log(`Searching for calls with phone number: ${phoneNumber}`);
             $.ajax({
                 url: 'callscreen_getcalls.php',
-                type: 'POST',
+                type: 'GET',
                 data: {
-                    phone_number: phoneNumber
+                    number: phoneNumber
                 },
                 success: function(response) {
                     const data = JSON.parse(response);
