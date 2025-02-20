@@ -352,6 +352,9 @@
                         call_notes: callNotes,
                         call_origin: callOrigin
                     };
+                    
+                    // Output the JSON data to the console before posting it.
+                    console.log("JSON Data:", JSON.stringify(formData, null, 2));
 
                     // Send an AJAX request to callscreen.php with the JSON data.
                     $.ajax({
@@ -361,7 +364,6 @@
                             data: JSON.stringify(formData)
                         },
                         success: function(response) {
-                            // Optionally clear the form or display a success message.
                             console.log('Server response:', response);
                             // For example, you could clear the form after a successful save:
                             clearFormData();
