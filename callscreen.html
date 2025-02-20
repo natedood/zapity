@@ -103,8 +103,8 @@
         // Function: updateFollowupVisibility
         // Purpose: Checks if any selected checkbox has the followup property set to 1.
         //          If so, it reveals the follow-up date input field, automatically
-        //          populates it with tomorrow's date, and sets the minimum allowed
-        //          date to tomorrow; otherwise, it hides the field.
+        //          populates it with today's date, and sets the minimum allowed
+        //          date to today; otherwise, it hides the field.
         // --------------------------------------------------
         function updateFollowupVisibility() {
             let show = false;
@@ -118,18 +118,15 @@
             document.getElementById('followupDateContainer').style.display = show ? 'block' : 'none';
             // If follow-up is required, automatically populate and constrain the date input.
             if (show) {
-                let tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
+                let today = new Date();
                 // Format the date as YYYY-MM-DD (required format for input type="date")
-                let yyyy = tomorrow.getFullYear();
-                let mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
-                let dd = String(tomorrow.getDate()).padStart(2, '0');
-                let nextDay = yyyy + '-' + mm + '-' + dd;
-                // Set the input value to tomorrow's date.
+                let yyyy = today.getFullYear();
+                let mm = String(today.getMonth() + 1).padStart(2, '0');
+                let dd = String(today.getDate()).padStart(2, '0');
+                let currentDate = yyyy + '-' + mm + '-' + dd;
                 let followupInput = document.getElementById('followupDate');
-                followupInput.value = nextDay;
-                // Set the minimum allowed date to tomorrow's date to prevent past dates.
-                followupInput.min = nextDay;
+                followupInput.value = currentDate;
+                followupInput.min = currentDate;
             }
         }
     </script>
@@ -137,7 +134,7 @@
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-        <a class="navbar-brand" href="#">Todo App</a>
+        <a class="navbar-brand" href="#">Rimspec</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
