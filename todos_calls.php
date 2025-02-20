@@ -20,7 +20,7 @@ $query = "
     WHERE t.status = $status
       AND t.todo_type_id = $type
       AND t.due_datetime <= CURRENT_DATE
-    ORDER BY t.due_datetime
+    ORDER BY t.due_datetime asc
 ";
 
 $result = $conn->query($query);

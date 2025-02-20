@@ -37,6 +37,8 @@
     </script>
     
     <script>
+
+
         // --------------------------------------------------
         // Function: createCheckbox
         // Purpose: Generates HTML for a single checkbox element with a label.
@@ -544,6 +546,18 @@
         // --------------------------------------------------
         function getCallFlags() {
             return callFlags;
+        }
+
+        
+        // Check if the URL has a query string variable named 'number' and store its value in a variable named 'phonenumber'.
+        const urlParams = new URLSearchParams(window.location.search);
+        const phonenumber = urlParams.get('number');
+        // If the 'phonenumber' query string variable exists, insert it into the phone number input field and run the search calls method.
+        if (phonenumber) {
+            document.getElementById('originOutgoing').checked = true;
+            const formattedPhoneNumber = formatPhoneNumber(phonenumber);
+            document.getElementById('phone_number').value = formattedPhoneNumber;
+            searchAllCalls(phonenumber);
         }
     </script>
 </body>

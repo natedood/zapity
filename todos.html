@@ -21,24 +21,65 @@
     </style>
     
     <script>
-        $(function(){
-            $("#tabs").tabs();
+      
+      function openCallScreen(phoneNumber) {
+        window.location.href = `callscreen.html?number=${phoneNumber}`;
+      }
 
-            // Define and call getCalls function to fetch and log calls JSON data.
-            function getCalls() {
+      function setTodoStatus(todoId, statusId = 1) {
+        $.ajax({
+          url: 'todos_status.php',
+          type: 'POST',
+          data: {
+            id: todoId,
+            status: statusId
+          },
+          success: function(response) {
+            console.log("Status updated:", response);
+            // Optionally, refresh the calls list after updating the status
+            getCalls();
+          },
+          error: function(xhr, status, error) {
+            console.error("Error updating status:", error);
+          }
+        });
+      }
+
+      // Define and call getCalls function to fetch and log calls JSON data.
+      function getCalls() {
                 $.ajax({
                     url: 'todos_calls.php',
                     type: 'GET',
                     dataType: 'json',
                     success: function(data) {
                         console.log("Calls fetched:", data);
+                        var tbody = $("#calls tbody");
+                        tbody.empty(); // Clear existing rows
+                        data.forEach(function(call) {
+                          var row = `<tr>
+                            <td>
+                              <button class="btn btn-success">
+                                <i class="fas fa-folder-open" onclick="openCallScreen('${call.phone_number}')"></i>
+                              </button>
+                            </td>
+                            <td>${call.phone_number.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')}</td>
+                            <td>${new Date(call.due_datetime).toLocaleDateString()}</td>
+                            <td>
+                                <button class="btn btn-primary" onclick="setTodoStatus(${call.id}, 1)">Done</button>
+                            </td>
+                          </tr>`;
+                          tbody.append(row);
+                        });
                     },
                     error: function(xhr, status, error) {
                         console.error("Error fetching calls:", error);
                     }
                 });
             }
-            
+
+        $(function(){
+            $("#tabs").tabs();
+
             // Call getCalls when the page loads.
             getCalls();
             
@@ -73,7 +114,8 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <!-- template for todo call items -->
+                <!-- <tr>
                   <td>
                     <button class="btn btn-success">
                       <i class="fas fa-folder-open"></i>
@@ -96,7 +138,7 @@
                   <td>
                     <button class="btn btn-primary">Done</button>
                   </td>
-                </tr>
+                </tr> -->
               </tbody>
             </table>
         </div>
