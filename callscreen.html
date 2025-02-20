@@ -418,6 +418,26 @@
         // --------------------------------------------------
         function searchAllCalls(phoneNumber) {
             console.log(`Searching for calls with phone number: ${phoneNumber}`);
+            $.ajax({
+                url: 'callscreen_getcalls.php',
+                type: 'POST',
+                data: {
+                    phone_number: phoneNumber
+                },
+                success: function(response) {
+                    const data = JSON.parse(response);
+                    searchCallsResults(data);
+                },
+                error: function(xhr, status, error) {
+                    console.log('AJAX error:', status, error);
+                }
+            });
+
+            function searchCallsResults(data) {
+                console.log('Search results:', data);
+                // Process the data as needed
+
+            }
         }
 
         // --------------------------------------------------
