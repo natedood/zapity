@@ -462,8 +462,48 @@
 
             function searchCallsResults(data) {
                 console.log('Search results:', data);
-                // Process the data as needed
+                // Clear any existing results inside the Call Log tab content area
+                $("#callHistory").empty();
 
+                // Create a collapsibleset container to hold the collapsible items
+                let collapsibleSet = $('<div data-role="collapsibleset" data-theme="a" data-content-theme="a"></div>');
+                
+                // Loop through each call record in the data array
+                data.forEach(call => {
+                    // Construct header text using call date/time and origin
+                    let callDate = new Date(call.call_datetime);
+                    let formattedDate = `${(callDate.getMonth() + 1).toString().padStart(2, '0')}/${callDate.getDate().toString().padStart(2, '0')}/${callDate.getFullYear()} ${callDate.getHours().toString().padStart(2, '0')}:${callDate.getMinutes().toString().padStart(2, '0')}`;
+                    let headerText = `Date: ${formattedDate} - ${call.call_origin}`;
+                    
+                    // Build the collapsible element with full call details
+                    let collapsible = $(`
+                        <div data-role="collapsible" style="font-size: 10px;">
+                            <hr/>
+                            <strong>${headerText}</strong><br/>
+                            ${call.notes ? `<strong>Notes:</strong> ${call.notes}<br/>` : ''}
+                            ${call.message ? `<strong>Message:</strong> ${call.message}<br/>` : ''}
+                        </div>
+                    `);
+                    
+                    // If one or more flags exist for the call, create a list of flags
+                    if (call.flags && Array.isArray(call.flags) && call.flags.length > 0) {
+                        let flagList = $('<ul></ul>');
+                        call.flags.forEach(flag => {
+                            flagList.append(`<li>
+                                <strong>${flag.flag_name}</strong> 
+                                ${flag.flag_specify ? `${flag.flag_specify}` : ''}
+                            </li>`);
+                        });
+                        collapsible.append('<p><strong>Flags:</strong></p>');
+                        collapsible.append(flagList);
+                    }
+                    
+                    // Append this collapsible item into the set
+                    collapsibleSet.append(collapsible);
+                });
+
+                // Append the collapsibleset to the "Call Log" tab area and enhance it with jQuery Mobile features
+                $("#callHistory").append(collapsibleSet).trigger("create");
             }
         }
 
