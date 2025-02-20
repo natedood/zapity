@@ -23,6 +23,30 @@
     <script>
         $(function(){
             $("#tabs").tabs();
+
+            // Define and call getCalls function to fetch and log calls JSON data.
+            function getCalls() {
+                $.ajax({
+                    url: 'todos_calls.php',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        console.log("Calls fetched:", data);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching calls:", error);
+                    }
+                });
+            }
+            
+            // Call getCalls when the page loads.
+            getCalls();
+            
+            // Attach an event handler for the refresh button next to the Calls title.
+            // Assuming the refresh button is the btn-info within the #calls container.
+            $("#calls button.btn-info").on("click", function() {
+                getCalls();
+            });
         });
     </script>
 </head>
@@ -35,33 +59,46 @@
             <li><a href="#other">Other</a></li>
         </ul>
         <div id="calls">
-            <h2>Calls</h2>
+            <h2>
+                <button class="btn btn-info"><i class="fas fa-sync-alt"></i></button> Calls
+            </h2>
             
             <table class="table table-striped">
               <thead>
                 <tr>
-                  <th>Action</th>
-                  <th>Phone Number</th>
-                  <th>Date Time</th>
-                  <th>Status</th>
+                  <th>Open</th>
+                  <th>Phone</th>
+                  <th>Due Date</th>
+                  <th>Save</th>
                 </tr>
               </thead>
-                <tbody>
+              <tbody>
                 <tr>
-                  <td><button class="btn btn-success"><i class="fas fa-folder-open"></i></button></td>
+                  <td>
+                    <button class="btn btn-success">
+                      <i class="fas fa-folder-open"></i>
+                    </button>
+                  </td>
                   <td>123-456-7890</td>
                   <td>01/01/2023-12:00</td>
-                  <td><button class="btn btn-primary">Done</button></td>
+                  <td>
+                    <button class="btn btn-primary">Done</button>
+                  </td>
                 </tr>
                 <tr>
-                  <td><button class="btn btn-success"><i class="fas fa-folder-open"></i></button></td>
+                  <td>
+                    <button class="btn btn-success">
+                      <i class="fas fa-folder-open"></i>
+                    </button>
+                  </td>
                   <td>987-654-3210</td>
                   <td>02/02/2023-15:30</td>
-                  <td><button class="btn btn-primary">Done</button></td>
+                  <td>
+                    <button class="btn btn-primary">Done</button>
+                  </td>
                 </tr>
-                </tbody>
+              </tbody>
             </table>
-
         </div>
         <div id="tires">
             <h2>Tires</h2>
