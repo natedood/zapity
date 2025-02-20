@@ -13,6 +13,7 @@
     <!-- Include jQuery and jQuery UI JS libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
     
     <style>
         /* Optional: reduce padding/margins to better integrate with your design */
@@ -27,9 +28,10 @@
       }
 
       function setTodoStatus(todoId, statusId = 1) {
+        console.log("setTodoStatus called with:", { todoId, statusId });
         $.ajax({
           url: 'todos_status.php',
-          type: 'POST',
+          type: 'GET',
           data: {
             id: todoId,
             status: statusId
@@ -92,6 +94,26 @@
     </script>
 </head>
 <body>
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="#">Todo App</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="callscreen.html">Call Screen</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="todos.html">Todo</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+<div style="margin-top: 70px;"></div>
+
     <div id="tabs">
         <ul>
             <li><a href="#calls">Calls</a></li>
