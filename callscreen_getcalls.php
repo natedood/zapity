@@ -11,6 +11,8 @@ if (!$data) {
     die("Error decoding JSON: " . json_last_error_msg());
 }
 
+
+
 // Close the database connection
 $conn->close();
 
