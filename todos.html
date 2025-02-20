@@ -1,79 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <!--
-      Setting the page title and viewport to ensure responsiveness on mobile devices.
-    -->
     <title>Todo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <!--
-      Include jQuery Mobile CSS for mobile-friendly UI components.
-      Include Bootstrap CSS for layout and additional styling.
-      Include FontAwesome for icon support.
-    -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-mobile/1.4.5/jquery.mobile.min.css">
+    <!-- Include Bootstrap for layout and FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    
-    <!--
-      Include jQuery library and jQuery Mobile JS.
-    -->
+    <!-- Include jQuery UI CSS for Tabs styling -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/smoothness/jquery-ui.css">
+
+    <!-- Include jQuery and jQuery UI JS libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mobile/1.4.5/jquery.mobile.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     
+    <style>
+        /* Optional: reduce padding/margins to better integrate with your design */
+        #tabs .ui-tabs-nav { margin: 0; padding: 0.5em; }
+        #tabs .ui-tabs-panel { padding: 1em; }
+    </style>
+    
+    <script>
+        $(function(){
+            $("#tabs").tabs();
+        });
+    </script>
 </head>
 <body>
-    <!--
-      jQuery Mobile page container.
-    -->
-    <div data-role="page">
-        <!--
-          Header section for the call screen.
-        -->
-        <div data-role="header">
-            <h1>Todo</h1>
+    <div id="tabs">
+        <ul>
+            <li><a href="#calls">Calls</a></li>
+            <li><a href="#tires">Tires</a></li>
+            <li><a href="#supplies">Supplies</a></li>
+            <li><a href="#other">Other</a></li>
+        </ul>
+        <div id="calls">
+            <h2>Calls</h2>
+            <p>Content for Calls tab.</p>
         </div>
-        
-        <!--
-          Content section with tabs.
-        -->
-        <div data-role="content">
-            <div data-role="tabs" id="tabs">
-                <div data-role="navbar">
-                    <ul>
-                        <li><a href="#calls" data-ajax="false">Calls</a></li>
-                        <li><a href="#tires" data-ajax="false">Tires</a></li>
-                        <li><a href="#supplies" data-ajax="false">Supplies</a></li>
-                        <li><a href="#other" data-ajax="false">Other</a></li>
-                    </ul>
-                </div>
-                <div id="calls" class="ui-body-d ui-content">
-                    <h2>Calls</h2>
-                    <p>Content for Calls tab.</p>
-                </div>
-                <div id="tires" class="ui-body-d ui-content">
-                    <h2>Tires</h2>
-                    <p>Content for Tires tab.</p>
-                </div>
-                <div id="supplies" class="ui-body-d ui-content">
-                    <h2>Supplies</h2>
-                    <p>Content for Supplies tab.</p>
-                </div>
-                <div id="other" class="ui-body-d ui-content">
-                    <h2>Other</h2>
-                    <p>Content for Other tab.</p>
-                </div>
-            </div>
+        <div id="tires">
+            <h2>Tires</h2>
+            <p>Content for Tires tab.</p>
         </div>
-
-        <!--
-          Footer section of the page (currently empty).
-        -->
-        <div data-role="footer">
-            <h4>&nbsp;</h4>
+        <div id="supplies">
+            <h2>Supplies</h2>
+            <p>Content for Supplies tab.</p>
+        </div>
+        <div id="other">
+            <h2>Other</h2>
+            <p>Content for Other tab.</p>
         </div>
     </div>
-    
 </body>
 </html>

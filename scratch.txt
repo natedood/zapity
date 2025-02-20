@@ -8,17 +8,115 @@ WHERE c.phone_number = 8172914639
 order by call_datetime desc, c.id desc;
 
 SELECT t.id, t.todo_type_id, t.link_id, t.notes, t.created, t.updated, t.status, t.assigned_user_id, t.due_datetime,
-  c.id AS call_id, c.call_origin, c.phone_number, c.caller_id_name, c.call_datetime, c.customer_id, c.notes AS call_notes, c.message,
-  cf.flag_name, cf.display_order, cf.specify, cf.followup, cfl.specify AS flag_specify
+  c.id AS call_id, c.call_origin, c.phone_number, c.caller_id_name, c.call_datetime, c.customer_id, c.notes AS call_notes, c.message
 FROM todos t
 JOIN calls c ON t.link_id = c.id
-JOIN calls_flags_link cfl ON c.id = cfl.call_id
-JOIN call_flags cf ON cfl.call_flag_id = cf.id
 WHERE t.status = 0
   AND t.todo_type_id = 1
   AND t.due_datetime <= CURRENT_DATE
 ORDER BY t.due_datetime;
- 
+
+
+
+[
+{
+    "id": "2",
+    "todo_type_id": "1",
+    "link_id": "42",
+    "notes": "followup todo test",
+    "created": "2025-02-14 16:12:12",
+    "updated": null,
+    "status": "0",
+    "assigned_user_id": null,
+    "due_datetime": "2025-02-15 00:00:00",
+    "call_id": "42",
+    "call_origin": "0",
+    "phone_number": "8172914639",
+    "caller_id_name": null,
+    "call_datetime": "2025-02-14 23:12:12",
+    "customer_id": null,
+    "call_notes": "followup todo test",
+    "message": ""
+},
+{
+    "id": "3",
+    "todo_type_id": "1",
+    "link_id": "43",
+    "notes": "todo followup test 2\n",
+    "created": "2025-02-14 16:12:57",
+    "updated": null,
+    "status": "0",
+    "assigned_user_id": null,
+    "due_datetime": "2025-02-15 00:00:00",
+    "call_id": "43",
+    "call_origin": "0",
+    "phone_number": "8172914639",
+    "caller_id_name": null,
+    "call_datetime": "2025-02-14 23:12:57",
+    "customer_id": null,
+    "call_notes": "todo followup test 2\n",
+    "message": ""
+},
+{
+    "id": "4",
+    "todo_type_id": "1",
+    "link_id": "44",
+    "notes": "",
+    "created": "2025-02-14 17:47:32",
+    "updated": null,
+    "status": "0",
+    "assigned_user_id": null,
+    "due_datetime": "2025-02-15 00:00:00",
+    "call_id": "44",
+    "call_origin": "0",
+    "phone_number": "8172914639",
+    "caller_id_name": null,
+    "call_datetime": "2025-02-15 00:47:32",
+    "customer_id": null,
+    "call_notes": "",
+    "message": ""
+},
+{
+    "id": "5",
+    "todo_type_id": "1",
+    "link_id": "45",
+    "notes": "888 test 1 ",
+    "created": "2025-02-14 18:10:38",
+    "updated": null,
+    "status": "0",
+    "assigned_user_id": null,
+    "due_datetime": "2025-02-15 00:00:00",
+    "call_id": "45",
+    "call_origin": "0",
+    "phone_number": "8885555555",
+    "caller_id_name": null,
+    "call_datetime": "2025-02-15 01:10:38",
+    "customer_id": null,
+    "call_notes": "888 test 1 ",
+    "message": ""
+},
+{
+    "id": "6",
+    "todo_type_id": "1",
+    "link_id": "47",
+    "notes": "test",
+    "created": "2025-02-15 11:43:30",
+    "updated": null,
+    "status": "0",
+    "assigned_user_id": null,
+    "due_datetime": "2025-02-16 00:00:00",
+    "call_id": "47",
+    "call_origin": "0",
+    "phone_number": "8172914639",
+    "caller_id_name": null,
+    "call_datetime": "2025-02-15 18:43:30",
+    "customer_id": null,
+    "call_notes": "test",
+    "message": ""
+}
+]
+
+
 
 ALTER TABLE todos
 ADD COLUMN due_datetime DATETIME;
