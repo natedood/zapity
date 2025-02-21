@@ -13,6 +13,7 @@ if (!$data) {
 
 // Extract data from the decoded JSON
 $phone_number  = $data['phone_number'];
+$caller_id_name  = $data['caller_id_name'];
 $flags         = $data['flags'];
 $followup_date = $data['followup_date'];
 $call_notes    = $data['call_notes'];
@@ -20,11 +21,11 @@ $call_origin   = $data['call_origin'];
 
 // Insert into the calls table, including the call_origin field
 $call_datetime = date('Y-m-d H:i:s');
-$stmt = $conn->prepare("INSERT INTO calls (phone_number, call_datetime, call_origin, notes) VALUES (?, ?, ?, ?)");
+$stmt = $conn->prepare("INSERT INTO calls (phone_number, call_datetime, call_origin, notes, caller_id_name) VALUES (?, ?, ?, ?,?)");
 if (!$stmt) {
     die("Prepare failed (calls): " . $conn->error);
 }
-$stmt->bind_param("ssss", $phone_number, $call_datetime, $call_origin, $call_notes);
+$stmt->bind_param("sssss", $phone_number, $call_datetime, $call_origin, $call_notes, $caller_id_name);
 if (!$stmt->execute()) {
     die("Execute failed (calls): " . $stmt->error);
 }

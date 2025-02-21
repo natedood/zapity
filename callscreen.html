@@ -171,6 +171,8 @@
                   Input group for entering a phone number.
                   Uses Bootstrap classes for styling.
                 -->
+                <hr/>
+
                 <div class="input-group">
                     <input type="tel" name="phone_number" id="phone_number" 
                         class="form-control" placeholder="Enter phone number">
@@ -183,6 +185,13 @@
                     </div>
                 </div>
                 
+                <hr/>
+
+                <div class="form-group">
+                    <!-- <label for="caller_id_name">Caller Name</label> -->
+                    <input type="text" class="form-control" id="caller_id_name" name="caller_id_name" placeholder="Enter caller name">
+                </div>
+
                 <!-- Insert this snippet right after the phone number input group and before the call flags container -->
                 <div id="callOriginContainer" class="mt-3">
                     <label class="d-block">Origin:</label>
@@ -210,6 +219,8 @@
                 -->
                 <div id="callFlagsContainer" class="mt-3"></div>
                 
+                <hr/>
+
                 <script>
                     // Render the call flags inside the container.
                     document.getElementById('callFlagsContainer').innerHTML = renderCallFlags(callFlags);
@@ -237,7 +248,7 @@
                   This date input is displayed only if a flag with followup == 1 is selected.
                   Uses Bootstrap's form-control styling and jQuery Mobile's data-role.
                 -->
-                  <div><br/></div>
+                  <!-- <div><br/></div> -->
                 <div id="followupDateContainer" style="display: none; margin-top: 20px;">
                     <label for="followupDate">Follow-Up Date</label>
                     <input type="date" id="followupDate" class="form-control" data-role="date">
@@ -292,6 +303,7 @@
             -->
             <script>
                 function clearFormData() {
+                    document.getElementById('caller_id_name').value = '';
                     // Clear the phone number field.
                     document.getElementById('phone_number').value = '';
                     // Clear all checkboxes, specify inputs, and hide child containers.
@@ -393,6 +405,10 @@
                     
                     // Retrieve the selected call origin value.
                     const callOrigin = document.querySelector('input[name="callOrigin"]:checked').value;
+                    
+                    // Get the caller ID name value
+                    const callerIdNameField = document.getElementById('caller_id_name');
+                    const callerIdName = callerIdNameField ? callerIdNameField.value : '';
 
                     // Create an object with the collected form data.
                     const formData = {
@@ -400,7 +416,8 @@
                         flags: selectedFlags,
                         followup_date: followupDate,
                         call_notes: callNotes,
-                        call_origin: callOrigin
+                        call_origin: callOrigin,
+                        caller_id_name: callerIdName
                     };
                     
                     // Output the JSON data to the console before posting it.
@@ -484,6 +501,7 @@
             function searchCallsResults(data) {
                 console.log('Search results:', data);
                 // Clear any existing results inside the Call Log tab content area
+                document.getElementById('caller_id_name').value = '';
                 $("#callHistory").empty();
 
                 // Create a collapsibleset container to hold the collapsible items
@@ -495,7 +513,58 @@
                     let callDate = new Date(call.call_datetime);
                     let formattedDate = `${(callDate.getMonth() + 1).toString().padStart(2, '0')}/${callDate.getDate().toString().padStart(2, '0')}/${callDate.getFullYear()} ${callDate.getHours().toString().padStart(2, '0')}:${callDate.getMinutes().toString().padStart(2, '0')}`;
                     let headerText = `Date: ${formattedDate} - ${call.call_origin}`;
-                    
+                    function searchCallsResults(data) {
+                        console.log('Search results:', data);
+                        // Clear any existing results inside the Call Log tab content area
+                        $("#callHistory").empty();
+
+                        // Create a collapsibleset container to hold the collapsible items
+                        let collapsibleSet = $('<div data-role="collapsibleset" data-theme="a" data-content-theme="a"></div>');
+                        
+                        // Loop through each call record in the data array
+                        data.forEach(call => {
+                            // Construct header text using call date/time and origin
+                            let callDate = new Date(call.call_datetime);
+                            let formattedDate = `${(callDate.getMonth() + 1).toString().padStart(2, '0')}/${callDate.getDate().toString().padStart(2, '0')}/${callDate.getFullYear()} ${callDate.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}`;
+                            let headerText = `Date: ${formattedDate} - ${call.call_origin}`;
+                            
+                            let callerIdNameElement = document.getElementById('caller_id_name');
+                            if (call.caller_id_name && callerIdNameElement && !callerIdNameElement.value.trim()) {
+                                callerIdNameElement.value = call.caller_id_name;
+                            }
+                            // Build the collapsible element with full call details
+                            let collapsible = $(`
+                                <div data-role="collapsible" style="font-size: 10px;">
+                                    <hr/>
+                                    <strong>${headerText}</strong><br/>
+                                    ${call.notes ? `<strong>Notes:</strong> ${call.notes}<br/>` : ''}
+                                    ${call.message ? `<strong>Message:</strong> ${call.message}<br/>` : ''}
+                                </div>
+                            `);
+                            
+                            // If one or more flags exist for the call, create a list of flags
+                            if (call.flags && Array.isArray(call.flags) && call.flags.length > 0) {
+                                let flagList = $('<ul></ul>');
+                                call.flags.forEach(flag => {
+                                    flagList.append(`<li>
+                                        <strong>${flag.flag_name}</strong> 
+                                        ${flag.flag_specify ? `${flag.flag_specify}` : ''}
+                                    </li>`);
+                                });
+                                collapsible.append('<p><strong>Flags:</strong></p>');
+                                collapsible.append(flagList);
+                            }
+                            
+                            // Append this collapsible item into the set
+                            collapsibleSet.append(collapsible);
+                        });
+
+                        // Append the collapsibleset to the callHistory element
+                        $("#callHistory").append(collapsibleSet);
+                    }
+                    if (call.caller_id_name && !document.getElementById('caller_id_name').value.trim()) {
+                        document.getElementById('caller_id_name').value = call.caller_id_name;
+                    }
                     // Build the collapsible element with full call details
                     let collapsible = $(`
                         <div data-role="collapsible" style="font-size: 10px;">
