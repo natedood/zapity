@@ -5,49 +5,60 @@ ini_set('display_errors', 1);
 
 include 'db_connect.php';
 
-// Get the status from the URL query parameter, default to 0 if not set
-$status = isset($_GET['status']) ? intval($_GET['status']) : 0;
-
 // Get the type from the URL query parameter, default to 1 if not set
 $type = isset($_GET['type']) ? intval($_GET['type']) : 1;
 
-// Query the database
-// $query = "
-//     SELECT t.id, t.todo_type_id, t.link_id, t.notes, t.created, t.updated, t.status, t.assigned_user_id, t.due_datetime,
-//            c.id AS call_id, c.call_origin, c.phone_number, c.caller_id_name, c.call_datetime, c.customer_id, c.notes AS call_notes, c.message
-//     FROM todos t
-//     JOIN calls c ON t.link_id = c.id
-//     WHERE t.status = $status
-//       AND t.todo_type_id = $type
-//       AND t.due_datetime <= CURRENT_DATE
-//     ORDER BY t.due_datetime asc
-// ";
+// Get the status from the query string, default to "0" if not provided
+$statusParam = isset($_GET['status']) && !empty($_GET['status']) ? $_GET['status'] : "0";
+// Sanitize status parameter (only numbers and commas allowed)
+$statusParam = preg_replace('/[^0-9,]/', '', $statusParam);
 
+// Get the start date and end date from the query string.
+// If not provided, default to today's date.
+$startDate = isset($_GET['startDate']) && !empty($_GET['startDate']) ? $_GET['startDate'] : date('Y-m-d');
+$endDate   = isset($_GET['endDate']) && !empty($_GET['endDate']) ? $_GET['endDate'] : date('Y-m-d');
 
-// Query the database
+// Build the SQL query to filter todos based on the date portion of due_datetime
 $query = "
 SELECT t.id, t.due_datetime,
-           c.id AS call_id, c.phone_number
-    FROM todos t
-    JOIN calls c ON t.link_id = c.id
-    WHERE t.status = $status
-      AND t.todo_type_id = $type
-      AND t.due_datetime <= CURRENT_DATE
-    group by c.phone_number
-    ORDER BY t.due_datetime asc
+    c.id AS call_id, c.phone_number,
+    (SELECT caller_id_name 
+     FROM calls 
+     WHERE id = c.id 
+     ORDER BY call_datetime DESC 
+     LIMIT 1) AS caller_id_name
+FROM todos t
+JOIN calls c ON t.link_id = c.id
+WHERE t.status IN ($statusParam)
+  AND t.todo_type_id = $type
+  AND DATE(t.due_datetime) BETWEEN ? AND ?
+GROUP BY c.phone_number
+ORDER BY t.due_datetime ASC
 ";
 
+$stmt = $conn->prepare($query);
+if (!$stmt) {
+    die("Prepare failed: " . $conn->error);
+}
 
-$result = $conn->query($query);
+// Bind the startDate and endDate parameters as strings.
+$stmt->bind_param("ss", $startDate, $endDate);
 
+if (!$stmt->execute()) {
+    die("Execute failed: " . $stmt->error);
+}
+
+// Get the result set from the statement
+$result = $stmt->get_result();
 $todos = array();
 if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
+    while ($row = $result->fetch_assoc()) {
         $todos[] = $row;
     }
 } else {
     $todos = array("message" => "No todos found");
 }
+$stmt->close();
 
 // Return the data as JSON
 echo json_encode($todos);

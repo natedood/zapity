@@ -49,37 +49,60 @@
 
       // Define and call getCalls function to fetch and log calls JSON data.
       function getCalls() {
-                $.ajax({
-                    url: 'todos_calls.php',
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function(data) {
-                        console.log("Calls fetched:", data);
-                        var tbody = $("#calls tbody");
-                        tbody.empty(); // Clear existing rows
-                        data.forEach(function(call) {
-                          var row = `<tr>
-                            <td>
-                              <button class="btn btn-success">
-                                <i class="fas fa-folder-open" onclick="openCallScreen('${call.phone_number}')"></i>
-                              </button>
-                            </td>
-                            <td>${call.phone_number.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')}</td>
-                            <td>${new Date(call.due_datetime).toLocaleDateString()}</td>
-                            <td>
-                                <button class="btn btn-primary" onclick="setTodoStatus(${call.id}, 1)">Done</button>
-                            </td>
-                          </tr>`;
-                          tbody.append(row);
-                        });
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Error fetching calls:", error);
-                    }
-                });
-            }
+        // Get the date range values.
+        var startDate = $("#startDate").val();
+        var endDate = $("#endDate").val();
 
-        $(function(){
+        // Collect all checked status values (e.g., Open (0) and/or Done (1)).
+        var statuses = [];
+        $(".status-check:checked").each(function(){
+          statuses.push($(this).val());
+        });
+        var statusParam = statuses.join(",");
+
+        console.log("Sending data to server:", {
+          startDate: startDate,
+          endDate: endDate,
+          status: statusParam
+        });
+
+        $.ajax({
+          url: 'todos_calls.php',
+          type: 'GET',
+          dataType: 'json',
+          data: {
+            startDate: startDate,
+            endDate: endDate,
+            status: statusParam
+          },
+          success: function(data) {
+            console.log("Calls fetched:", data);
+            var tbody = $("#calls tbody");
+            tbody.empty(); // Clear existing rows
+            data.forEach(function(call) {
+              var row = `<tr>
+                <td>
+                  <button class="btn btn-success">
+                    <i class="fas fa-folder-open" onclick="openCallScreen('${call.phone_number}')"></i>
+                  </button>
+                </td>
+                <td>${String(call.phone_number).replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')}</td>
+                <td>${call.caller_id_name}</td>
+                <td>${new Date(call.due_datetime).toLocaleDateString()}</td>
+                <td>
+                    <button class="btn btn-primary" onclick="setTodoStatus(${call.id}, 1)">Done</button>
+                </td>
+              </tr>`;
+              tbody.append(row);
+            });
+          },
+          error: function(xhr, status, error) {
+            console.error("Error fetching calls:", error);
+          }
+        });
+      }
+      
+      $(function(){
             $("#tabs").tabs();
 
             // Call getCalls when the page loads.
@@ -89,7 +112,10 @@
             // Assuming the refresh button is the btn-info within the #calls container.
             $("#calls button.btn-info").on("click", function() {
                 getCalls();
-            });
+            });    
+            // Register a change event for startDate, endDate, and status checkboxes to re-run getCalls.
+            $("#startDate, #endDate").on("change", getCalls);
+            $(".status-check").on("change", getCalls);
         });
     </script>
 </head>
@@ -112,6 +138,16 @@
     </div>
  </nav>
 
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('startDate').value = today;
+    document.getElementById('endDate').value = today;
+  });
+</script>
+
+ 
     <div id="tabs">
         <ul>
             <li><a href="#calls">Calls</a></li>
@@ -123,12 +159,42 @@
             <h2>
                 <button class="btn btn-info"><i class="fas fa-sync-alt"></i></button> Calls
             </h2>
-            
+
+                        
+            <div class="container mt-5">
+            <div class="row">
+              <div class="col-6">
+                <input type="date" id="startDate" class="form-control start-date">
+              </div>
+              <div class="col-6">
+                <input type="date" id="endDate" class="form-control end-date">
+              </div>
+            </div>
+            </div>
+
+            <div class="container mt-3">
+              <div class="row">
+                <div class="col">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input status-check" type="checkbox" id="statusOpen" value="0" checked>
+                    <label class="form-check-label" for="statusOpen">Open</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input status-check" type="checkbox" id="statusDone" value="1">
+                    <label class="form-check-label" for="statusDone">Done</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr/>
+
             <table class="table table-striped">
               <thead>
                 <tr>
                   <th>Open</th>
                   <th>Phone</th>
+                  <th>Name</th>
                   <th>Due Date</th>
                   <th>Save</th>
                 </tr>

@@ -5,41 +5,35 @@ ini_set('display_errors', 1);
 
 include 'db_connect.php';
 
-// Get the status from the query string, default to 0 if not provided
-$status = isset($_GET['status']) ? intval($_GET['status']) : 0;
+// Get the status from the query string, default to "9" if not provided
+$statusParam = isset($_GET['status']) && !empty($_GET['status']) ? $_GET['status'] : "9";
+// Sanitize status parameter (only numbers and commas allowed)
+$statusParam = preg_replace('/[^0-9,]/', '', $statusParam);
 
-// Get the scope from the query string, default to 1 if not provided
-$scope = isset($_GET['scope']) ? intval($_GET['scope']) : 1;
+// Get the start date and end date from the query string.
+// If not provided, default to today's date.
+$startDate = isset($_GET['startDate']) && !empty($_GET['startDate']) ? $_GET['startDate'] : date('Y-m-d');
+$endDate   = isset($_GET['endDate']) && !empty($_GET['endDate']) ? $_GET['endDate'] : date('Y-m-d');
 
-// Get the start date from the query string, default to today's date if not provided
-$start = isset($_GET['start']) ? $_GET['start'] : date('Y-m-d');
+// Build the SQL query to filter todos based on the date portion of due_datetime
+$sql = "SELECT * FROM todos 
+        WHERE status IN ($statusParam) 
+        AND DATE(due_datetime) BETWEEN ? AND ? 
+        ORDER BY due_datetime ASC";
 
-// Get the type from the query string, default to 1 if not provided
-$type = isset($_GET['type']) ? intval($_GET['type']) : 1;
-
-// Prepare the SQL statement based on the scope
-if ($scope == 1) {
-    // Only return todo objects where due_datetime is today's date
-    $stmt = $conn->prepare("SELECT * FROM todos WHERE status = ? AND DATE(due_datetime) = ? ORDER BY due_datetime ASC");
-    if (!$stmt) {
-        die("Prepare failed: " . $conn->error);
-    }
-    $stmt->bind_param("is", $status, $start);
-} else {
-    // Return the last X number of days worth of items
-    $end_date = date('Y-m-d', strtotime($start . ' + ' . $scope . ' days'));
-    $stmt = $conn->prepare("SELECT * FROM todos WHERE status = ? AND due_datetime BETWEEN ? AND ? ORDER BY due_datetime ASC");
-    if (!$stmt) {
-        die("Prepare failed: " . $conn->error);
-    }
-    $stmt->bind_param("iss", $status, $start, $end_date);
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    die("Prepare failed: " . $conn->error);
 }
+
+// Bind the startDate and endDate parameters as strings.
+$stmt->bind_param("ss", $startDate, $endDate);
 
 if (!$stmt->execute()) {
     die("Execute failed: " . $stmt->error);
 }
 
-// Get the result set from the executed statement
+// Get the result set from the statement
 $result = $stmt->get_result();
 $todos = [];
 while ($row = $result->fetch_assoc()) {
