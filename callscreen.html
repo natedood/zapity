@@ -194,7 +194,7 @@
 
                 <!-- Insert this snippet right after the phone number input group and before the call flags container -->
                 <div id="callOriginContainer" class="mt-3">
-                    <label class="d-block">Origin:</label>
+                    <!-- <label class="d-block">Origin:</label> -->
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="callOrigin" id="originIncoming" value="in" checked>
                         <label class="form-check-label" for="originIncoming">In</label>
@@ -204,12 +204,16 @@
                         <label class="form-check-label" for="originOutgoing">Out</label>
                     </div>
                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="callOrigin" id="originOutgoingText" value="walkin">
+                        <label class="form-check-label" for="originOutgoingText">Walk-in</label> 
+                    </div>
+                    <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="callOrigin" id="originIncomingText" value="intxt">
-                        <label class="form-check-label" for="originIncomingText">In Text</label>
+                        <label class="form-check-label" for="originIncomingText">Text In</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="callOrigin" id="originOutgoingText" value="outtxt">
-                        <label class="form-check-label" for="originOutgoingText">Out Text</label>
+                        <label class="form-check-label" for="originOutgoingText">Text Out</label>
                     </div>
                 </div>
 
@@ -272,13 +276,13 @@
             <!-- Tabs for Call History and Invoice History -->
             <div data-role="tabs" id="tabs">
                 <ul>
-                    <li><a href="#callHistory" data-toggle="tab">Call Log</a></li>
+                    <li><a href="#callHistory" data-toggle="tab">Calls</a></li>
                     <li><a href="#invoiceHistory" data-toggle="tab">Invoices</a></li>
                 </ul>
                 <div id="callHistory" class="tab-content">
-                    <h3>Call Log</h3>
+                    <!-- <h3>Calls</h3> -->
                     <!-- Content for Call Log tab -->
-                    <p>Call log details will be displayed here.</p>
+                    <p class="text-secondary">Enter a phone number to view call history</p>
                 </div>
                 <div id="invoiceHistory" class="tab-content">
                     <h3>Invoice History</h3>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Todo</title>
+    <title>Call Log</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <!-- Include Bootstrap for layout and FontAwesome for icons -->
@@ -25,26 +25,6 @@
       
       function openCallScreen(phoneNumber) {
         window.location.href = `callscreen.html?number=${phoneNumber}`;
-      }
-
-      function setTodoStatus(todoId, statusId = 1) {
-        console.log("setTodoStatus called with:", { todoId, statusId });
-        $.ajax({
-          url: 'todos_status.php',
-          type: 'GET',
-          data: {
-            id: todoId,
-            status: statusId
-          },
-          success: function(response) {
-            console.log("Status updated:", response);
-            // Optionally, refresh the calls list after updating the status
-            getCalls();
-          },
-          error: function(xhr, status, error) {
-            console.error("Error updating status:", error);
-          }
-        });
       }
 
       // Define and call getCalls function to fetch and log calls JSON data.
@@ -110,16 +90,11 @@
         </li>
       </ul>
     </div>
- </nav>
+  </nav>
+  
+<!-- <div style="margin-top: 70px;"></div> -->
 
-    <div id="tabs">
-        <ul>
-            <li><a href="#calls">Calls</a></li>
-            <li><a href="#tires">Tires</a></li>
-            <li><a href="#supplies">Supplies</a></li>
-            <li><a href="#other">Other</a></li>
-        </ul>
-        <div id="calls">
+    
             <h2>
                 <button class="btn btn-info"><i class="fas fa-sync-alt"></i></button> Calls
             </h2>
@@ -129,13 +104,14 @@
                 <tr>
                   <th>Open</th>
                   <th>Phone</th>
-                  <th>Due Date</th>
-                  <th>Save</th>
+                  <th>Date</th>
+                  <th>Origin</th>
+                  <th>Flags</th>
                 </tr>
               </thead>
               <tbody>
                 <!-- template for todo call items -->
-                <!-- <tr>
+                <tr>
                   <td>
                     <button class="btn btn-success">
                       <i class="fas fa-folder-open"></i>
@@ -143,37 +119,22 @@
                   </td>
                   <td>123-456-7890</td>
                   <td>01/01/2023-12:00</td>
+                  <td>In</td>
                   <td>
-                    <button class="btn btn-primary">Done</button>
+                    <ul class="small">
+                      <li class="small">Flag 1</li>
+                      <li class="small">Flag 2</li>
+                      <li class="small">Flag 3</li>
+                    </ul>
                   </td>
+                  <!-- <td>
+                    <button class="btn btn-primary"><i class="fas fa-plus"></i></button>
+                  </td> -->
                 </tr>
-                <tr>
-                  <td>
-                    <button class="btn btn-success">
-                      <i class="fas fa-folder-open"></i>
-                    </button>
-                  </td>
-                  <td>987-654-3210</td>
-                  <td>02/02/2023-15:30</td>
-                  <td>
-                    <button class="btn btn-primary">Done</button>
-                  </td>
-                </tr> -->
+
               </tbody>
             </table>
-        </div>
-        <div id="tires">
-            <h2>Tires</h2>
-            <p>Content for Tires tab.</p>
-        </div>
-        <div id="supplies">
-            <h2>Supplies</h2>
-            <p>Content for Supplies tab.</p>
-        </div>
-        <div id="other">
-            <h2>Other</h2>
-            <p>Content for Other tab.</p>
-        </div>
-    </div>
+       
+    
 </body>
 </html>
