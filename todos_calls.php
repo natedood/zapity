@@ -12,16 +12,31 @@ $status = isset($_GET['status']) ? intval($_GET['status']) : 0;
 $type = isset($_GET['type']) ? intval($_GET['type']) : 1;
 
 // Query the database
+// $query = "
+//     SELECT t.id, t.todo_type_id, t.link_id, t.notes, t.created, t.updated, t.status, t.assigned_user_id, t.due_datetime,
+//            c.id AS call_id, c.call_origin, c.phone_number, c.caller_id_name, c.call_datetime, c.customer_id, c.notes AS call_notes, c.message
+//     FROM todos t
+//     JOIN calls c ON t.link_id = c.id
+//     WHERE t.status = $status
+//       AND t.todo_type_id = $type
+//       AND t.due_datetime <= CURRENT_DATE
+//     ORDER BY t.due_datetime asc
+// ";
+
+
+// Query the database
 $query = "
-    SELECT t.id, t.todo_type_id, t.link_id, t.notes, t.created, t.updated, t.status, t.assigned_user_id, t.due_datetime,
-           c.id AS call_id, c.call_origin, c.phone_number, c.caller_id_name, c.call_datetime, c.customer_id, c.notes AS call_notes, c.message
+SELECT t.id, t.due_datetime,
+           c.id AS call_id, c.phone_number
     FROM todos t
     JOIN calls c ON t.link_id = c.id
     WHERE t.status = $status
       AND t.todo_type_id = $type
       AND t.due_datetime <= CURRENT_DATE
+    group by c.phone_number
     ORDER BY t.due_datetime asc
 ";
+
 
 $result = $conn->query($query);
 

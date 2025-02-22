@@ -20,6 +20,16 @@ SELECT CURRENT_TIMESTAMP AS current_datetime, CURRENT_TIMEZONE() AS timezone_inf
 
 i want a query that gets numbers called today that have not called in the past 30 days. 
 
+SELECT t.id, t.due_datetime,
+           c.id AS call_id, c.phone_number
+    FROM todos t
+    JOIN calls c ON t.link_id = c.id
+    WHERE t.status = 0
+      AND t.todo_type_id = 1
+      AND t.due_datetime <= CURRENT_DATE
+    group by c.phone_number
+    ORDER BY t.due_datetime asc
+
 
 
 SELECT *
