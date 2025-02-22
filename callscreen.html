@@ -315,6 +315,11 @@
             -->
             <script>
                 function clearFormData() {
+                    // Hide the saveDoneButton if it exists.
+                    const saveDoneButton = document.getElementById('saveDoneButton');
+                    if (saveDoneButton) {
+                        saveDoneButton.style.display = 'none';
+                    }s
                     document.getElementById('caller_id_name').value = '';
                     // Clear the phone number field.
                     document.getElementById('phone_number').value = '';
