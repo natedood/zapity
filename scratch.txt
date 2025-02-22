@@ -18,7 +18,13 @@ ORDER BY t.due_datetime;
 
 SELECT CURRENT_TIMESTAMP AS current_datetime, CURRENT_TIMEZONE() AS timezone_info;
 
-i want a query that gets numbers called today that have not called in the past 30 days. 
+the json data stored in $data may have a value named clearTodo - it will have either a 0 or 1 value
+ (ignore if null or non-existent). if the value is 1, then i want to run a mysql query to update the 
+ todos table.  i want to set the status to 1 for all records for the current day in the todos table where 
+ todos.link_id matches the calls.id and the $data phone_number value matches the calls.phone_number field.
+ 
+ with the phone number 
+ passed in $data phone_number field.
 
 SELECT t.id, t.due_datetime,
            c.id AS call_id, c.phone_number

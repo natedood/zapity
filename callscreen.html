@@ -52,7 +52,7 @@
         // --------------------------------------------------
         function createCheckbox(flag) {
             let checkboxHtml = `<div class="form-check">
-                <input class="form-check-input" type="checkbox" value="${flag.id}" id="flag_${flag.id}" data-followup="${flag.followup}">
+                <input class="form-check-input flag-checkbox" type="checkbox" value="${flag.id}" id="flag_${flag.id}" data-followup="${flag.followup}">
                 <label class="form-check-label" for="flag_${flag.id}">
                     ${flag.flag_name}
                 </label>
@@ -270,6 +270,14 @@
                   Action buttons for saving or resetting the form.
                 -->
                 <button id="saveButton" class="btn btn-success mt-3">Save</button>
+                <script>
+                    // Check if the URL has a query string variable named 'todo' and its value is '1'.
+                    const urlParamsTodo = new URLSearchParams(window.location.search);
+                    const todoParam = urlParamsTodo.get('todo');
+                    if (todoParam === '1') {
+                        document.write('<button id="saveDoneButton" class="btn btn-warning mt-3">Save & Mark Done</button>');
+                    }
+                </script>
                 <button id="resetButton" class="btn btn-danger mt-3">Reset</button>
             </div>
             
@@ -343,7 +351,8 @@
               The resulting data is logged as JSON.
             -->
             <script>
-                function saveFormData() {
+                // Updated Save function accepts an optional clearTodo parameter (default is 0)
+                function saveFormData(clearTodo = 0) {
                     // Remove non-digit characters from the phone number.
                     const phoneNumberField = document.getElementById('phone_number');
                     const phoneNumber = phoneNumberField.value.replace(/[^\d]/g, '');
@@ -370,7 +379,7 @@
                     }
 
                     // Validate that at least one call flag checkbox is selected.
-                    const selectedFlagsElements = document.querySelectorAll('.form-check-input:checked');
+                    const selectedFlagsElements = document.querySelectorAll('.flag-checkbox:checked');
                     if (selectedFlagsElements.length === 0) {
                         let errorDiv = document.getElementById('errorAlert');
                         const callFlagsContainer = document.getElementById('callFlagsContainer');
@@ -410,7 +419,7 @@
                     // Retrieve the selected call origin value.
                     const callOrigin = document.querySelector('input[name="callOrigin"]:checked').value;
                     
-                    // Get the caller ID name value
+                    // Get the caller ID name value.
                     const callerIdNameField = document.getElementById('caller_id_name');
                     const callerIdName = callerIdNameField ? callerIdNameField.value : '';
 
@@ -421,32 +430,52 @@
                         followup_date: followupDate,
                         call_notes: callNotes,
                         call_origin: callOrigin,
-                        caller_id_name: callerIdName
+                        caller_id_name: callerIdName,
+                        clearTodo : 0
                     };
+
+                    // Add the clearTodo property if clearTodo parameter is provided.
+                    if (clearTodo) {
+                        formData.clearTodo = clearTodo;
+                    }
                     
                     // Output the JSON data to the console before posting it.
                     console.log("JSON Data:", JSON.stringify(formData, null, 2));
 
                     // Send an AJAX request to callscreen.php with the JSON data.
                     $.ajax({
-                        url: 'callscreen.php',
+                        url: 'callscreen2.php',
                         type: 'POST',
                         data: {
                             data: JSON.stringify(formData)
                         },
                         success: function(response) {
                             console.log('Server response:', response);
-                            // For example, you could clear the form after a successful save:
+                            // Clear the form after a successful save.
                             clearFormData();
+                            if (clearTodo === 1) {
+                                window.location.href = 'todos.html';
+                            }
                         },
                         error: function(xhr, status, error) {
                             console.log('AJAX error:', status, error);
                         }
                     });
                 }
+
+                // Existing event listener for saveButton.
+                document.getElementById('saveButton').addEventListener('click', function() {
+                    saveFormData(0);
+                });
                 
-                // When the Save button is clicked, call saveFormData.
-                document.getElementById('saveButton').addEventListener('click', saveFormData);
+                // Event listener for saveDoneButton.
+                // When clicked, it calls saveFormData with clearTodo set to 1.
+                if(document.getElementById('saveDoneButton')) {
+                    document.getElementById('saveDoneButton').addEventListener('click', function() {
+                        saveFormData(1);
+
+                    });
+                }
             </script>
         </div>
         
