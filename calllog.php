@@ -5,35 +5,77 @@ ini_set('display_errors', 1);
 
 include 'db_connect.php';
 
-// Get the status from the URL query parameter, default to 0 if not set
-$status = isset($_GET['status']) ? intval($_GET['status']) : 0;
+// Get the startDate and endDate from the query string (default to today if not provided)
+$startDate = isset($_GET['startDate']) && !empty($_GET['startDate']) ? $_GET['startDate'] : date('Y-m-d');
+$endDate   = isset($_GET['endDate'])   && !empty($_GET['endDate'])   ? $_GET['endDate']   : date('Y-m-d');
 
-// Get the type from the URL query parameter, default to 1 if not set
-$type = isset($_GET['type']) ? intval($_GET['type']) : 1;
+// Get the origin parameter, expected as a comma-delimited string (e.g. "in,out,walkin")
+// If not provided or empty, no filtering on origin will be applied
+$originParam = isset($_GET['origin']) && !empty($_GET['origin']) ? $_GET['origin'] : '';
 
-// Query the database
-$query = "
-    SELECT t.id, t.todo_type_id, t.link_id, t.notes, t.created, t.updated, t.status, t.assigned_user_id, t.due_datetime,
-           c.id AS call_id, c.call_origin, c.phone_number, c.caller_id_name, c.call_datetime, c.customer_id, c.notes AS call_notes, c.message
-    FROM todos t
-    JOIN calls c ON t.link_id = c.id
-    WHERE t.status = $status
-      AND t.todo_type_id = $type
-      AND t.due_datetime <= CURRENT_DATE
-    ORDER BY t.due_datetime asc
-";
+// Get the followuponly parameter; default to 0 if not provided.
+$followUpOnly = isset($_GET['followuponly']) && $_GET['followuponly'] == '1' ? 1 : 0;
 
-$result = $conn->query($query);
+// Start building the SQL query.
+// We join calls_flags_link and call_flags to get the flag names, then GROUP_CONCAT them.
+$sql = "SELECT calls.*, 
+               GROUP_CONCAT(cf.flag_name ORDER BY cf.display_order SEPARATOR ', ') AS flags
+        FROM calls 
+        LEFT JOIN calls_flags_link cfl ON calls.id = cfl.call_id
+        LEFT JOIN call_flags cf ON cfl.call_flag_id = cf.id
+        WHERE DATE(call_datetime) BETWEEN ? AND ? ";
 
-$todos = array();
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        $todos[] = $row;
+// If an origin filter is provided, process the comma-delimited values.
+if ($originParam != '') {
+    $origins = explode(',', $originParam);
+    $allowedOrigins = array('in','out','walkin','textin','textout');
+    $originList = [];
+    foreach ($origins as $orig) {
+        $orig = trim($orig);
+        if (in_array($orig, $allowedOrigins)) {
+            $originList[] = "'" . $conn->real_escape_string($orig) . "'";
+        }
     }
-} else {
-    $todos = array("message" => "No todos found");
+    if (count($originList) > 0) {
+        $sql .= " AND call_origin IN (" . implode(',', $originList) . ") ";
+    }
 }
 
-// Return the data as JSON
-echo json_encode($todos);
+// If followuponly is 1, add a condition that ensures the call has at least one flag with followup = 1.
+if ($followUpOnly == 1) {
+    $sql .= " AND EXISTS (
+                SELECT 1 
+                FROM calls_flags_link cfl2 
+                JOIN call_flags cf2 ON cfl2.call_flag_id = cf2.id 
+                WHERE cfl2.call_id = calls.id AND cf2.followup = 1
+              ) ";
+}
+
+// Group by the call to allow aggregation of the flags and order descending by the call_datetime.
+$sql .= " GROUP BY calls.id 
+          ORDER BY call_datetime DESC";
+
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    die("Prepare failed: " . $conn->error);
+}
+
+// Bind the startDate and endDate parameters as strings.
+$stmt->bind_param("ss", $startDate, $endDate);
+
+if (!$stmt->execute()) {
+    die("Execute failed: " . $stmt->error);
+}
+
+// Get the result set from the statement.
+$result = $stmt->get_result();
+$calls = [];
+while ($row = $result->fetch_assoc()) {
+    $calls[] = $row;
+}
+$stmt->close();
+$conn->close();
+
+// Return the data as JSON.
+echo json_encode($calls);
 ?>

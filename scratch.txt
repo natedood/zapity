@@ -23,6 +23,24 @@ the json data stored in $data may have a value named clearTodo - it will have ei
  todos table.  i want to set the status to 1 for all records for the current day in the todos table where 
  todos.link_id matches the calls.id and the $data phone_number value matches the calls.phone_number field.
  
+
+ 
+this page is called via ajax with the following values: startDate and endDate  - which 
+should be defaulted to today. this field maps to the call_datetime field in the calls table 
+and should be used to filter the results.  the results should be returned in descending order
+by call_datetime.
+
+an origin field named origin.  this is a checkbox field so 
+the values can come in as a list of values. it maps to the call_origin field in the calls table. 
+
+lastly, a field named followuponly will be passed in, if not provided it should be defaulted to 0.
+  this is a checkbox field so the value can be 1 or 0.
+if 1, only return records where the followup field is set to one in the calls_flags table where the followup 
+field is 1. the calls and calls_flags_link is joined by calls.call_id and calls_flags_id.call_id. 
+the calls_flags_link.call_flag_id joins to the call_flags.followup_id.  
+
+
+
  with the phone number 
  passed in $data phone_number field.
 
