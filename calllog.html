@@ -14,6 +14,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         /* Optional: reduce padding/margins to better integrate with your design */
@@ -120,29 +121,139 @@
 
 <br/>
 
-<!-- Result count at the top -->
-<div id="resultCountTop" class="container mb-2"></div>
+<div class="container mt-4">
+  <!-- Bootstrap Nav Tabs -->
+  <ul class="nav nav-tabs" id="callLogTabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="calls-tab" data-toggle="tab" href="#calls" role="tab" aria-controls="calls" aria-selected="true">Calls</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="stats-tab" data-toggle="tab" href="#stats" role="tab" aria-controls="stats" aria-selected="false">Stats</a>
+    </li>
+  </ul>
 
-<table class="table table-striped container">
-  <thead>
-    <tr>
-      <th>Open</th>
-      <th>Phone</th>
-      <th>Name</th>
-      <th>Date</th>
-      <th>Origin</th>
-      <th>Flags</th>
-    </tr>
-  </thead>
-  <tbody>
-    <!-- Template for call log items will be dynamically injected here -->
-  </tbody>
-</table>
+  <!-- Tab Content -->
+  <div class="tab-content" id="callLogTabsContent">
+    <!-- Calls Tab -->
+    <div class="tab-pane fade show active" id="calls" role="tabpanel" aria-labelledby="calls-tab">
+      <!-- Result count at the top -->
+      <div id="resultCountTop" class="container mb-2 text-center">Total results: 0</div>
 
-<!-- Result count at the bottom -->
-<div id="resultCountBottom" class="container mt-2"></div>
+      <!-- Results Table -->
+      <table class="table table-striped container">
+        <thead>
+          <tr>
+            <th>Open</th>
+            <th>Phone</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Origin</th>
+            <th>Flags</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Template for call log items will be dynamically injected here -->
+        </tbody>
+      </table>
+
+      <!-- Result count at the bottom -->
+      <div id="resultCountBottom" class="container mt-2 text-center">Total results: 0</div>
+    </div>
+
+    <!-- Stats Tab -->
+    <div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats-tab">
+      <!-- Line chart container -->
+      <div class="container mt-4">
+        <div class="row">
+          <div class="col-12">
+            <canvas id="callChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
+  var callChart; // Global chart instance
+
+  // Function to update the chart given an array of call objects
+  function updateChart(callData) {
+      // Aggregate call counts by day from the call data.
+      var countsByDay = {};
+      callData.forEach(function(call) {
+          // Extract the date portion (YYYY-MM-DD) from call_datetime.
+          var callDate = new Date(call.call_datetime).toISOString().split('T')[0];
+          countsByDay[callDate] = (countsByDay[callDate] || 0) + 1;
+      });
+      
+      // Get the date range from the filter inputs.
+      var startDateStr = $("#startDate").val();
+      var endDateStr = $("#endDate").val();
+      
+      // Build an array with all days between the start and end dates, inclusive.
+      var labels = [];
+      if (startDateStr && endDateStr) {
+          var current = new Date(startDateStr);
+          var end = new Date(endDateStr);
+          while (current <= end) {
+              // Format the date as YYYY-MM-DD.
+              var dateStr = current.toISOString().split('T')[0];
+              labels.push(dateStr);
+              current.setDate(current.getDate() + 1);
+          }
+      }
+      
+      // Create dataCounts array using countsByDay; if a day has no calls, default to 0.
+      var dataCounts = labels.map(function(label) {
+          return countsByDay[label] || 0;
+      });
+      
+      // Get the canvas context.
+      var ctx = document.getElementById('callChart').getContext('2d');
+
+      // If the chart already exists, update it.
+      if (callChart) {
+          callChart.data.labels = labels;
+          callChart.data.datasets[0].data = dataCounts;
+          callChart.update();
+      } else {
+          callChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                  labels: labels,
+                  datasets: [{
+                      label: 'Calls per Day',
+                      data: dataCounts,
+                      fill: false,
+                      borderColor: 'rgba(75, 192, 192, 1)',
+                      tension: 0.1
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  scales: {
+                      x: {
+                          title: {
+                              display: true,
+                              text: 'Day (YYYY-MM-DD)'
+                          }
+                      },
+                      y: {
+                          title: {
+                              display: true,
+                              text: 'Number of Calls'
+                          },
+                          beginAtZero: true,
+                          precision: 0
+                      }
+                  }
+              }
+          });
+      }
+  }
+
   // Function to load call log data based on the current filter form values.
   function loadCallLog() {
       // Get date filters.
@@ -183,8 +294,7 @@
               // If "Filter to unique phone numbers only" is checked, consolidate the rows.
               if ($("#filterByPhone").prop("checked")) {
                   var uniqueCalls = {};
-                  // Assuming the data is ordered descending by call_datetime,
-                  // keep the first entry (most recent) for each phone number.
+                  // Assuming data is ordered descending by call_datetime:
                   data.forEach(function(call) {
                       if (!uniqueCalls[call.phone_number]) {
                           uniqueCalls[call.phone_number] = call;
@@ -193,13 +303,13 @@
                   data = Object.values(uniqueCalls);
               }
               
-              var tbody = $("table.table tbody");
-              tbody.empty(); // Clear existing rows.
-              
-              // Update result count
+              // Update running totals.
               var totalResults = data.length;
               $("#resultCountTop").text("Total results: " + totalResults);
               $("#resultCountBottom").text("Total results: " + totalResults);
+              
+              var tbody = $("table.table tbody");
+              tbody.empty(); // Clear existing rows.
               
               data.forEach(function(call) {
                   var row = `<tr>
@@ -209,13 +319,16 @@
                         </button>
                       </td>
                       <td>${String(call.phone_number).replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')}</td>
-                      <td>${ call.caller_id_name || ""}</td>
-                      <td>${ new Date(call.call_datetime).toLocaleDateString()}</td>
+                      <td>${call.caller_id_name || ""}</td>
+                      <td>${new Date(call.call_datetime).toLocaleDateString()}</td>
                       <td>${call.call_origin}</td>
                       <td>${call.flags ? call.flags : ""}</td>
                   </tr>`;
                   tbody.append(row);
               });
+              
+              // Update the chart with the call log data.
+              updateChart(data);
           },
           error: function(xhr, status, error) {
               console.error("Error fetching call log:", error);
@@ -223,10 +336,11 @@
       });
   }
 
-  // On page load
-  $(function(){
+  // On page load.
+  $(function() {
       // Set default dates to today.
       var today = new Date();
+      // Optionally adjust timezone if needed.
       today.setHours(today.getHours() - 6);
       var dt = today.toISOString().split('T')[0];
       $("#startDate").val(dt);
@@ -242,10 +356,12 @@
       loadCallLog();
   });
 
-  // Function to open the call screen (modify as needed)
+  // Function to open the call screen.
   function openCallScreen(phoneNumber) {
       window.location.href = "callscreen.html?number=" + phoneNumber;
   }
 </script>
+
+
 </body>
 </html>
