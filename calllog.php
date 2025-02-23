@@ -6,15 +6,18 @@ ini_set('display_errors', 1);
 include 'db_connect.php';
 
 // Get the startDate and endDate from the query string (default to today if not provided)
-$startDate = isset($_GET['startDate']) && !empty($_GET['startDate']) ? $_GET['startDate'] : date('Y-m-d');
-$endDate   = isset($_GET['endDate'])   && !empty($_GET['endDate'])   ? $_GET['endDate']   : date('Y-m-d');
+$startDate = (isset($_GET['startDate']) && !empty($_GET['startDate'])) ? $_GET['startDate'] : date('Y-m-d');
+$endDate   = (isset($_GET['endDate']) && !empty($_GET['endDate'])) ? $_GET['endDate'] : date('Y-m-d');
 
 // Get the origin parameter, expected as a comma-delimited string (e.g. "in,out,walkin")
 // If not provided or empty, no filtering on origin will be applied
-$originParam = isset($_GET['origin']) && !empty($_GET['origin']) ? $_GET['origin'] : '';
+$originParam = (isset($_GET['origin']) && !empty($_GET['origin'])) ? $_GET['origin'] : '';
 
 // Get the followuponly parameter; default to 0 if not provided.
-$followUpOnly = isset($_GET['followuponly']) && $_GET['followuponly'] == '1' ? 1 : 0;
+$followUpOnly = (isset($_GET['followuponly']) && $_GET['followuponly'] == '1') ? 1 : 0;
+
+// Get the nofollowup parameter; default to 0 if not provided.
+$noFollowUp = (isset($_GET['nofollowup']) && $_GET['nofollowup'] == '1') ? 1 : 0;
 
 // Start building the SQL query.
 // We join calls_flags_link and call_flags to get the flag names, then GROUP_CONCAT them.
@@ -48,6 +51,20 @@ if ($followUpOnly == 1) {
                 FROM calls_flags_link cfl2 
                 JOIN call_flags cf2 ON cfl2.call_flag_id = cf2.id 
                 WHERE cfl2.call_id = calls.id AND cf2.followup = 1
+              ) ";
+}
+
+// If nofollowup is 1, add a condition to exclude calls for a given phone number on a particular day 
+// if there exists any call on that day for that phone number with a followup flag.
+if ($noFollowUp == 1) {
+    $sql .= " AND NOT EXISTS (
+                SELECT 1 
+                FROM calls c2 
+                JOIN calls_flags_link cfl2 ON c2.id = cfl2.call_id 
+                JOIN call_flags cf2 ON cfl2.call_flag_id = cf2.id 
+                WHERE c2.phone_number = calls.phone_number 
+                  AND DATE(c2.call_datetime) = DATE(calls.call_datetime)
+                  AND cf2.followup = 1
               ) ";
 }
 
