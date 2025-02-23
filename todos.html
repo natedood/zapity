@@ -77,6 +77,22 @@
           },
           success: function(data) {
             console.log("Calls fetched:", data);
+            
+            // If the new "Filter to unique phone numbers only" checkbox is checked,
+            // consolidate the data so that only the most recent record for each unique phone number is kept.
+            if ($("#filterByPhone").prop("checked")) {
+              var uniqueCalls = {};
+              // Data is assumed to be ordered descending by due_datetime.
+              data.forEach(function(call) {
+                // If a phone_number hasn't been seen yet, store the record.
+                if (!uniqueCalls[call.phone_number]) {
+                  uniqueCalls[call.phone_number] = call;
+                }
+              });
+              // Replace data with the unique values.
+              data = Object.values(uniqueCalls);
+            }
+            
             var tbody = $("#calls tbody");
             tbody.empty(); // Clear existing rows
             data.forEach(function(call) {
@@ -95,6 +111,9 @@
               </tr>`;
               tbody.append(row);
             });
+
+            // Update result count
+            $("#resultCountTop, #resultCountBottom").text(`Total results: ${data.length}`);
           },
           error: function(xhr, status, error) {
             console.error("Error fetching calls:", error);
@@ -116,11 +135,12 @@
             // Register a change event for startDate, endDate, and status checkboxes to re-run getCalls.
             $("#startDate, #endDate").on("change", getCalls);
             $(".status-check").on("change", getCalls);
+            $("#filterByPhone").on("change", getCalls);
         });
     </script>
 </head>
 <body>
-  
+
   <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
     <a class="navbar-brand" href="#">Rimspec</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -191,7 +211,26 @@
               </div>
             </div>
 
+            <!-- New row for "Filter to unique phone numbers only" -->
+            <div class="container mt-3">
+              <div class="row">
+                <div class="col">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="filterByPhone" id="filterByPhone" value="1">
+                    <label class="form-check-label" for="filterByPhone">Filter to unique phone numbers only</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <hr/>
+
+            <!-- Result count above the table -->
+            <div class="container mt-3">
+              <div class="row">
+                  <div id="resultCountTop">Total results: 0</div>
+              </div>
+            </div>
 
             <table class="table table-striped">
               <thead>
@@ -231,6 +270,13 @@
                 </tr> -->
               </tbody>
             </table>
+
+            <!-- Result count below the table -->
+            <div class="container mt-3">
+              <div class="row">
+                  <div id="resultCountBottom">Total results: 0</div>
+              </div>
+            </div>
         </div>
         <div id="tires">
             <h2>Tires</h2>
