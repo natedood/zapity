@@ -141,7 +141,8 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    var today = new Date().toISOString().split('T')[0];
+    // -6 hour offset for CST timezone
+    var today = new Date(new Date().getTime() - 6 * 60 * 60 * 1000).toISOString().split('T')[0];
     document.getElementById('startDate').value = today;
     document.getElementById('endDate').value = today;
   });
