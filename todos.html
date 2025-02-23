@@ -90,7 +90,7 @@
                 <td>${call.caller_id_name}</td>
                 <td>${new Date(call.due_datetime).toLocaleDateString()}</td>
                 <td>
-                    <button class="btn btn-primary" onclick="setTodoStatus(${call.id}, 1)">Done</button>
+                      ${call.status === 0 ? `<button class="btn btn-primary" onclick="setTodoStatus(${call.id}, 1)">Done</button>` : ''}
                 </td>
               </tr>`;
               tbody.append(row);
