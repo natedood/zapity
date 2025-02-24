@@ -12,13 +12,26 @@ if (!isset($_GET['number']) || empty($_GET['number'])) {
 $phone_number = $_GET['number'];
 
 // Prepare the SQL query with the phone number parameter
-$sql = "SELECT c.id, c.call_origin, c.phone_number, c.caller_id_name, DATE_SUB(c.call_datetime, INTERVAL 6 HOUR) AS call_datetime, c.customer_id, c.notes, c.message,
-    cf.flag_name, cf.display_order, cf.specify, cf.followup, cfl.specify AS flag_specify
-FROM calls c
-JOIN calls_flags_link cfl ON c.id = cfl.call_id
-JOIN call_flags cf ON cfl.call_flag_id = cf.id
-WHERE c.phone_number = ?
-ORDER BY call_datetime DESC, c.id DESC";
+$sql = "SELECT 
+            c.id, 
+            c.call_origin, 
+            c.phone_number, 
+            c.caller_id_name, 
+            DATE_SUB(c.call_datetime, INTERVAL 6 HOUR) AS call_datetime, 
+            c.customer_id, 
+            c.notes, 
+            c.message,
+            cf.id AS flag_id, 
+            cf.flag_name, 
+            cf.display_order, 
+            cf.specify, 
+            cf.followup, 
+            cfl.specify AS flag_specify
+        FROM calls c
+        JOIN calls_flags_link cfl ON c.id = cfl.call_id
+        JOIN call_flags cf ON cfl.call_flag_id = cf.id
+        WHERE c.phone_number = ?
+        ORDER BY call_datetime DESC, c.id DESC";
 
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
@@ -51,6 +64,7 @@ while ($row = $result->fetch_assoc()) {
         );
     }
     $rows[$id]['flags'][] = array(
+        'flag_id' => $row['flag_id'],
         'flag_name' => $row['flag_name'],
         'display_order' => $row['display_order'],
         'specify' => $row['specify'],

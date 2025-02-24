@@ -318,6 +318,8 @@
             -->
             <script>
                 function clearFormData() {
+                    // Clear the content in the calls tab.
+                    document.getElementById('callHistory').innerHTML = '';
                     // Hide the saveDoneButton if it exists.
                     const saveDoneButton = document.getElementById('saveDoneButton');
                     if (saveDoneButton) {
@@ -550,6 +552,26 @@
                 
                 // Loop through each call record in the data array
                 data.forEach(call => {
+                    // Process the flags to auto-check the checkboxes.
+                    if (call.flags && Array.isArray(call.flags)) {
+                        call.flags.forEach(flag => {
+                            // flag.flag_id is the field from the AJAX response.
+                            let checkbox = document.getElementById(`flag_${flag.flag_id}`);
+                            if (checkbox) {
+                                checkbox.checked = true;
+                                // Optionally, show the specify input if needed:
+                                const specifyDiv = document.getElementById(`specify_${flag.flag_id}`);
+                                if (specifyDiv) {
+                                    specifyDiv.style.display = 'block';
+                                }
+                                // Show the children container if it exists to un-collapse any child flags.
+                                const childrenDiv = document.getElementById(`children_${flag.flag_id}`);
+                                if (childrenDiv) {
+                                    childrenDiv.style.display = 'block';
+                                }
+                            }
+                        });
+                    }
                     // Construct header text using call date/time and origin
                     let callDate = new Date(call.call_datetime);
                     let formattedDate = `${(callDate.getMonth() + 1).toString().padStart(2, '0')}/${callDate.getDate().toString().padStart(2, '0')}/${callDate.getFullYear()} ${callDate.getHours().toString().padStart(2, '0')}:${callDate.getMinutes().toString().padStart(2, '0')}`;
