@@ -4,7 +4,7 @@
     <!--
       Setting the page title and viewport to ensure responsiveness on mobile devices.
     -->
-    <title>Call Screen</title>
+    <title>Leads</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <!--
@@ -142,7 +142,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link" href="callscreen.html">Call Screen</a>
+              <a class="nav-link" href="callscreen.html">Leads</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="todos.html">Todo</a>
@@ -163,7 +163,7 @@
           Header section for the call screen.
         -->
         <div data-role="header">
-            <h1>Call Screen</h1>
+            <h1>Leads</h1>
         </div>
         <!--
           Content section contains the form elements.
@@ -269,11 +269,38 @@
                 <textarea id="callnotes" class="form-control mb-3" rows="3" placeholder="Call notes" 
                 name="callnotes"></textarea>
                 
+                <!-- <div class="container mt-3"> -->
+                    <div class="row align-items-center">
+                      <div class="col-12">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="close_lead" name="close_lead" value="1">
+                          <label class="form-check-label" for="close_lead">Close Lead</label>
+                        </div>
+                        <div id="leadResultContainer" class="mt-2" style="display: none;">
+                          <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="lead_result" id="sale" value="1">
+                            <label class="form-check-label" for="sale">Sale</label>
+                          </div>
+                          <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="lead_result" id="dead" value="2">
+                            <label class="form-check-label" for="dead">Dead</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <!-- </div> -->
+
                 <!--
                   Action buttons for saving or resetting the form.
                 -->
                 <button id="saveButton" class="btn btn-success mt-3">Save</button>
                 <script>
+                    // Toggle the display of the lead result radio buttons when "Close Lead" is checked.
+                    document.getElementById('close_lead').addEventListener('change', function() {
+                        const leadResultContainer = document.getElementById('leadResultContainer');
+                        leadResultContainer.style.display = this.checked ? 'block' : 'none';
+                    });
+
                     // Check if the URL has a query string variable named 'todo' and its value is '1'.
                     const urlParamsTodo = new URLSearchParams(window.location.search);
                     const todoParam = urlParamsTodo.get('todo');
@@ -433,6 +460,19 @@
                     const callerIdNameField = document.getElementById('caller_id_name');
                     const callerIdName = callerIdNameField ? callerIdNameField.value : '';
 
+                    // Retrieve the "Close Lead" value.
+                    const closeLeadCheckbox = document.getElementById('close_lead');
+                    const closeLead = closeLeadCheckbox.checked ? 1 : 0;
+
+                    // If Close Lead is selected, get the lead result value.
+                    let leadResult = null;
+                    if (closeLead) {
+                        const leadResultRadio = document.querySelector('input[name="lead_result"]:checked');
+                        if (leadResultRadio) {
+                            leadResult = parseInt(leadResultRadio.value, 10);
+                        }
+                    }
+
                     // Create an object with the collected form data.
                     const formData = {
                         phone_number: phoneNumber,
@@ -441,7 +481,9 @@
                         call_notes: callNotes,
                         call_origin: callOrigin,
                         caller_id_name: callerIdName,
-                        clearTodo : 0
+                        close_lead: closeLead,
+                        lead_result: leadResult,
+                        clearTodo: 0
                     };
 
                     // Add the clearTodo property if clearTodo parameter is provided.

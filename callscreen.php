@@ -12,18 +12,21 @@ if (!$data) {
 }
 
 // Extract data from the decoded JSON
-$phone_number  = $data['phone_number'];
+$phone_number    = $data['phone_number'];
 $caller_id_name  = $data['caller_id_name'];
-$flags         = $data['flags'];
-$followup_date = $data['followup_date'];
-$call_notes    = $data['call_notes'];
-$call_origin   = $data['call_origin'];
+$flags           = $data['flags'];
+$followup_date   = $data['followup_date'];
+$call_notes      = $data['call_notes'];
+$call_origin     = $data['call_origin'];
 
+// New fields for closing the lead:
+$close_lead    = isset($data['close_lead']) ? (int)$data['close_lead'] : 0;
+$lead_result   = isset($data['lead_result']) ? (int)$data['lead_result'] : null;
 
 // Check if clearTodo is set and equals 1
 if (isset($data['clearTodo']) && $data['clearTodo'] == 1) {
     // server is in UTC, so subtract 6 hours to get the correct date in CST
-    // todo: timzone should be set in php.ini
+    // todo: timezone should be set in php.ini
     $today = date('Y-m-d', strtotime('-6 hours'));
     $stmt = $conn->prepare("UPDATE todos t
                             JOIN calls c ON t.link_id = c.id
@@ -40,10 +43,9 @@ if (isset($data['clearTodo']) && $data['clearTodo'] == 1) {
     $stmt->close();
 }
 
-
 // Insert into the calls table, including the call_origin field
 $call_datetime = date('Y-m-d H:i:s');
-$stmt = $conn->prepare("INSERT INTO calls (phone_number, call_datetime, call_origin, notes, caller_id_name) VALUES (?, ?, ?, ?,?)");
+$stmt = $conn->prepare("INSERT INTO calls (phone_number, call_datetime, call_origin, notes, caller_id_name) VALUES (?, ?, ?, ?, ?)");
 if (!$stmt) {
     die("Prepare failed (calls): " . $conn->error);
 }
@@ -82,6 +84,35 @@ if (!empty($followup_date)) {
     $stmt->bind_param("iiss", $todo_type_id, $call_id, $followup_date, $call_notes);
     if (!$stmt->execute()) {
         die("Execute failed (todos): " . $stmt->error);
+    }
+    $stmt->close();
+}
+
+// If close_lead is selected, update all call records with this phone number that have lead_status_id set to 0 or NULL,
+// and update all todo records for this phone number to status 1.
+if ($close_lead === 1) {
+    // Update calls.lead_status_id for records with lead_status_id of 0 or NULL.
+    $stmt = $conn->prepare("UPDATE calls SET lead_status_id = ? WHERE phone_number = ? AND (lead_status_id IS NULL OR lead_status_id = 0)");
+    if (!$stmt) {
+        die("Prepare failed (update calls lead_status): " . $conn->error);
+    }
+    $stmt->bind_param("is", $lead_result, $phone_number);
+    if (!$stmt->execute()) {
+        die("Execute failed (update calls lead_status): " . $stmt->error);
+    }
+    $stmt->close();
+
+    // Update all todos records for calls with this phone number to status 1.
+    $stmt = $conn->prepare("UPDATE todos t
+                            JOIN calls c ON t.link_id = c.id 
+                            SET t.status = 1
+                            WHERE c.phone_number = ?");
+    if (!$stmt) {
+        die("Prepare failed (update todos status): " . $conn->error);
+    }
+    $stmt->bind_param("s", $phone_number);
+    if (!$stmt->execute()) {
+        die("Execute failed (update todos status): " . $stmt->error);
     }
     $stmt->close();
 }
