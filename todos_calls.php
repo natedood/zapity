@@ -21,12 +21,12 @@ $endDate   = isset($_GET['endDate']) && !empty($_GET['endDate']) ? $_GET['endDat
 // Build the SQL query to filter todos based on the date portion of due_datetime
 $query = "
 SELECT t.id, t.due_datetime, t.status,
-    c.id AS call_id, c.phone_number,
-    (SELECT caller_id_name 
-     FROM calls 
-     WHERE id = c.id 
-     ORDER BY call_datetime DESC 
-     LIMIT 1) AS caller_id_name
+       c.id AS call_id, c.phone_number, c.notes AS call_notes,
+       (SELECT caller_id_name 
+        FROM calls 
+        WHERE id = c.id 
+        ORDER BY call_datetime DESC 
+        LIMIT 1) AS caller_id_name
 FROM todos t
 JOIN calls c ON t.link_id = c.id
 WHERE t.status IN ($statusParam)
