@@ -109,25 +109,29 @@
         // --------------------------------------------------
         function updateFollowupVisibility() {
             let show = false;
-            // Loop through all checked checkboxes to determine if any require follow-up.
             document.querySelectorAll('.form-check-input:checked').forEach(function(checkbox) {
                 if (checkbox.getAttribute('data-followup') === "1") {
                     show = true;
                 }
             });
-            // Show or hide the follow-up date container.
+            
             document.getElementById('followupDateContainer').style.display = show ? 'block' : 'none';
-            // If follow-up is required, automatically populate and constrain the date input.
+            
             if (show) {
-                let today = new Date();
-                // Format the date as YYYY-MM-DD (required format for input type="date")
-                let yyyy = today.getFullYear();
-                let mm = String(today.getMonth() + 1).padStart(2, '0');
-                let dd = String(today.getDate()).padStart(2, '0');
-                let currentDate = yyyy + '-' + mm + '-' + dd;
+                // Get current date in Central Time by subtracting 6 hours
+                let centralNow = new Date(new Date().getTime() - 6 * 60 * 60 * 1000);
+                // Set to tomorrow
+                let tomorrow = new Date(centralNow.getTime() + 24 * 60 * 60 * 1000);
+                
+                // Format as YYYY-MM-DD
+                let yyyy = tomorrow.getFullYear();
+                let mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+                let dd = String(tomorrow.getDate()).padStart(2, '0');
+                let followupDefaultDate = `${yyyy}-${mm}-${dd}`;
+                
                 let followupInput = document.getElementById('followupDate');
-                followupInput.value = currentDate;
-                followupInput.min = currentDate;
+                followupInput.value = followupDefaultDate;
+                followupInput.min = followupDefaultDate;
             }
         }
     </script>
