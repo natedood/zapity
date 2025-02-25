@@ -387,59 +387,6 @@
   }
 </script>
 
-<script>
-  // Attach click event to sortable header cells
-  $(document).on("click", "table.table thead th.sortable", function() {
-      var th = $(this);
-      var index = th.index();
-
-      // Toggle sort order.
-      var order = th.data("order") === "asc" ? "desc" : "asc";
-      th.data("order", order);
-      
-      // Remove sort indicators from all header cells.
-      $("table.table thead th.sortable").find(".sort-indicator").remove();
-      
-      // Append sort indicator to the clicked header.
-      var indicator = order === "asc" ? "<i class='fas fa-sort-up'></i>" : "<i class='fas fa-sort-down'></i>";
-      th.append("<span class='sort-indicator'>" + indicator + "</span>");
-      
-      // Get all rows from the tbody.
-      var rows = $("table.table tbody tr").get();
-      
-      rows.sort(function(a, b) {
-          var A = $(a).children("td").eq(index).text().trim();
-          var B = $(b).children("td").eq(index).text().trim();
-          
-          // If sorting a date column, convert to Date objects.
-          if (th.data("type") === "date") {
-              A = new Date(A);
-              B = new Date(B);
-          }
-          // If sorting a numeric value (like phone), compare as numbers.
-          if (th.data("type") === "phone") {
-              A = parseInt(A.replace(/\D/g, ""), 10);
-              B = parseInt(B.replace(/\D/g, ""), 10);
-          }
-          
-          if(order === "asc") {
-              return A < B ? -1 : A > B ? 1 : 0;
-          } else {
-              return A > B ? -1 : A < B ? 1 : 0;
-          }
-      });
-      
-      // Append sorted rows back into the tbody.
-      $.each(rows, function(index, row) {
-          $("table.table tbody").append(row);
-      });
-  });
-
-  window.addEventListener('pageshow', function(event) {
-    loadCallLog();
-  });
-
-</script>
 
 </body>
 </html>
