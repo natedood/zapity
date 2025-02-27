@@ -181,16 +181,16 @@
     // Get current date in Central Time (-6 hours)
     var centralNow = new Date(new Date().getTime() - 6 * 60 * 60 * 1000);
     
-    // Create date for one year ago
-    var oneYearAgo = new Date(centralNow);
-    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    // Create date for one week ago
+    //var oneWeekAgo = new Date(centralNow.getTime() - (7 * 24 * 60 * 60 * 1000));
     
     // Format dates as YYYY-MM-DD
     var today = centralNow.toISOString().split('T')[0];
-    var startDate = oneYearAgo.toISOString().split('T')[0];
+    //var startDate = oneWeekAgo.toISOString().split('T')[0];
     
+    // changed to always pull status 0 items on server call function
     // Set the input values
-    document.getElementById('startDate').value = startDate;
+    document.getElementById('startDate').value = today;
     document.getElementById('endDate').value = today;
   });
 </script>
