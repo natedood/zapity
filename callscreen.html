@@ -442,6 +442,29 @@
                         }
                     }
 
+                    // Validate that a call origin is selected
+                    const callOriginSelected = document.querySelector('input[name="callOrigin"]:checked');
+                    if (!callOriginSelected) {
+                        let errorDiv = document.getElementById('callOriginError');
+                        const callOriginContainer = document.getElementById('callOriginContainer');
+                        if (!errorDiv) {
+                            errorDiv = document.createElement('div');
+                            errorDiv.id = 'callOriginError';
+                            errorDiv.className = 'alert alert-danger mt-2';
+                            errorDiv.style.fontSize = '0.875rem';
+                            errorDiv.innerText = 'Please select a call origin before submitting.';
+                            callOriginContainer.appendChild(errorDiv);
+                        } else {
+                            errorDiv.style.display = 'block';
+                        }
+                        return;
+                    } else {
+                        let errorDiv = document.getElementById('callOriginError');
+                        if (errorDiv) {
+                            errorDiv.style.display = 'none';
+                        }
+                    }
+
                     // Process checked flags.
                     const selectedFlags = [];
                     selectedFlagsElements.forEach(checkbox => {
