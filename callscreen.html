@@ -35,7 +35,7 @@
         
         // Array of test call flags. 
         // Each flag has properties: id, parent_id (for hierarchical grouping), flag_name, specify (indicating if extra details are needed), and followup (indicating if a follow-up is required).
-        var callFlags = [{"id":1,"parent_id":0,"flag_name":"Spam","display_order":null,"specify":0,"followup":0},{"id":2,"parent_id":0,"flag_name":"New Customer","display_order":null,"specify":0,"followup":0},{"id":3,"parent_id":2,"flag_name":"New job","display_order":null,"specify":0,"followup":1},{"id":4,"parent_id":3,"flag_name":"Crack","display_order":null,"specify":0,"followup":0},{"id":5,"parent_id":3,"flag_name":"Bend","display_order":null,"specify":0,"followup":0},{"id":6,"parent_id":3,"flag_name":"Recon","display_order":null,"specify":0,"followup":0},{"id":7,"parent_id":3,"flag_name":"Other","display_order":null,"specify":0,"followup":0},{"id":8,"parent_id":7,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":9,"parent_id":2,"flag_name":"Other","display_order":null,"specify":0,"followup":0},{"id":10,"parent_id":9,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":11,"parent_id":0,"flag_name":"Existing Customer","display_order":null,"specify":0,"followup":0},{"id":12,"parent_id":11,"flag_name":"New job","display_order":null,"specify":0,"followup":1},{"id":13,"parent_id":12,"flag_name":"Crack","display_order":null,"specify":0,"followup":0},{"id":14,"parent_id":12,"flag_name":"Bend","display_order":null,"specify":0,"followup":0},{"id":15,"parent_id":12,"flag_name":"Recon","display_order":null,"specify":0,"followup":0},{"id":16,"parent_id":12,"flag_name":"Other","display_order":null,"specify":0,"followup":0},{"id":17,"parent_id":16,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":18,"parent_id":11,"flag_name":"Other","display_order":null,"specify":0,"followup":0},{"id":19,"parent_id":18,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":20,"parent_id":11,"flag_name":"Status check","display_order":null,"specify":0,"followup":0},{"id":21,"parent_id":0,"flag_name":"Other N/A","display_order":null,"specify":0,"followup":0},{"id":22,"parent_id":21,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":24,"parent_id":0,"flag_name":"Force Followup","display_order":null,"specify":0,"followup":1}];
+        var callFlags = [{"id":1,"parent_id":0,"flag_name":"Spam","display_order":null,"specify":0,"followup":0},{"id":2,"parent_id":0,"flag_name":"New Customer","display_order":null,"specify":0,"followup":0},{"id":3,"parent_id":2,"flag_name":"New job","display_order":null,"specify":1,"followup":1},{"id":4,"parent_id":3,"flag_name":"Crack","display_order":null,"specify":0,"followup":0},{"id":5,"parent_id":3,"flag_name":"Bend","display_order":null,"specify":0,"followup":0},{"id":6,"parent_id":3,"flag_name":"Recon","display_order":null,"specify":0,"followup":0},{"id":7,"parent_id":3,"flag_name":"Other","display_order":null,"specify":0,"followup":0},{"id":8,"parent_id":7,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":9,"parent_id":2,"flag_name":"Other","display_order":null,"specify":0,"followup":0},{"id":10,"parent_id":9,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":11,"parent_id":0,"flag_name":"Existing Customer","display_order":null,"specify":0,"followup":0},{"id":12,"parent_id":11,"flag_name":"New job","display_order":null,"specify":1,"followup":1},{"id":13,"parent_id":12,"flag_name":"Crack","display_order":null,"specify":0,"followup":0},{"id":14,"parent_id":12,"flag_name":"Bend","display_order":null,"specify":0,"followup":0},{"id":15,"parent_id":12,"flag_name":"Recon","display_order":null,"specify":0,"followup":0},{"id":16,"parent_id":12,"flag_name":"Other","display_order":null,"specify":0,"followup":0},{"id":17,"parent_id":16,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":18,"parent_id":11,"flag_name":"Other","display_order":null,"specify":0,"followup":0},{"id":19,"parent_id":18,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":20,"parent_id":11,"flag_name":"Status check","display_order":null,"specify":0,"followup":0},{"id":21,"parent_id":0,"flag_name":"Other N/A","display_order":null,"specify":0,"followup":0},{"id":22,"parent_id":21,"flag_name":"Specify","display_order":null,"specify":1,"followup":0},{"id":24,"parent_id":0,"flag_name":"Force Followup","display_order":null,"specify":0,"followup":1}];
         
     </script>
     
@@ -118,22 +118,30 @@
             document.getElementById('followupDateContainer').style.display = show ? 'block' : 'none';
             
             if (show) {
-                // Get current date in Central Time by subtracting 6 hours
-                let centralNow = new Date(new Date().getTime() - 6 * 60 * 60 * 1000);
-                // Set to tomorrow
-                let tomorrow = new Date(centralNow.getTime() + 24 * 60 * 60 * 1000);
-                
-                // Format as YYYY-MM-DD
-                let yyyy = tomorrow.getFullYear();
-                let mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
-                let dd = String(tomorrow.getDate()).padStart(2, '0');
-                let followupDefaultDate = `${yyyy}-${mm}-${dd}`;
-                
-                let followupInput = document.getElementById('followupDate');
-                followupInput.value = followupDefaultDate;
-                followupInput.min = followupDefaultDate;
+                setDefaultFollowupDate();
             }
         }
+
+        function setDefaultFollowupDate() {
+            // Get current date in Central Time by subtracting 6 hours
+            let centralNow = new Date(new Date().getTime() - 6 * 60 * 60 * 1000);
+            // Set to tomorrow
+            let tomorrow = new Date(centralNow.getTime() + 24 * 60 * 60 * 1000);
+            
+            // Format as YYYY-MM-DD
+            let yyyy = tomorrow.getFullYear();
+            let mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+            let dd = String(tomorrow.getDate()).padStart(2, '0');
+            let followupDefaultDate = `${yyyy}-${mm}-${dd}`;
+            
+            let followupInput = document.getElementById('followupDate');
+            followupInput.value = followupDefaultDate;
+            followupInput.min = followupDefaultDate;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setDefaultFollowupDate();
+        });
     </script>
 </head>
 <body>
@@ -248,8 +256,8 @@
                                 // Display the specify input if the checkbox is checked, otherwise hide it.
                                 specifyDiv.style.display = this.checked ? 'block' : 'none';
                             }
-                            // Update the follow-up date input visibility based on follow-up flags.
-                            updateFollowupVisibility();
+                            // Remove this line since we don't need to toggle visibility anymore
+                            // updateFollowupVisibility();
                         });
                     });
                 </script>
@@ -259,8 +267,8 @@
                   This date input is displayed only if a flag with followup == 1 is selected.
                   Uses Bootstrap's form-control styling and jQuery Mobile's data-role.
                 -->
-                  <!-- <div><br/></div> -->
-                <div id="followupDateContainer" style="display: none; margin-top: 20px;">
+                <!-- Change this div to always be visible -->
+                <div id="followupDateContainer" style="margin-top: 20px;">
                     <label for="followupDate">Follow-Up Date</label>
                     <input type="date" id="followupDate" class="form-control" data-role="date">
                 </div>
@@ -359,27 +367,29 @@
                     document.getElementById('caller_id_name').value = '';
                     // Clear the phone number field.
                     document.getElementById('phone_number').value = '';
-                    // Clear all checkboxes, specify inputs, and hide child containers.
+                    
+                    // Clear all checkboxes (except call origin), specify inputs, and hide child containers.
                     document.querySelectorAll('.form-check-input').forEach(checkbox => {
-                        checkbox.checked = false;
-                        const specifyDiv = document.getElementById(`specify_${checkbox.value}`);
-                        if (specifyDiv) {
-                            specifyDiv.style.display = 'none';
-                            specifyDiv.querySelector('input').value = '';
-                        }
-                        const childrenDiv = document.getElementById(`children_${checkbox.value}`);
-                        if (childrenDiv) {
-                            childrenDiv.style.display = 'none';
+                        // Skip call origin radio buttons
+                        if (!checkbox.name.includes('callOrigin')) {
+                            checkbox.checked = false;
+                            const specifyDiv = document.getElementById(`specify_${checkbox.value}`);
+                            if (specifyDiv) {
+                                specifyDiv.style.display = 'none';
+                                specifyDiv.querySelector('input').value = '';
+                            }
+                            const childrenDiv = document.getElementById(`children_${checkbox.value}`);
+                            if (childrenDiv) {
+                                childrenDiv.style.display = 'none';
+                            }
                         }
                     });
-                    // Clear the follow-up date input.
-                    document.getElementById('followupDate').value = '';
-                    // Hide the follow-up date container.
-                    document.getElementById('followupDateContainer').style.display = 'none';
+
+                    // Reset the follow-up date to tomorrow but keep container visible
+                    setDefaultFollowupDate();
+                    
                     // Clear the call notes textarea.
                     document.getElementById('callnotes').value = '';
-                    // Update the follow-up date visibility.
-                    updateFollowupVisibility();
                 }
                 // When the Reset button is clicked, call clearFormData.
                 document.getElementById('resetButton').addEventListener('click', clearFormData);
