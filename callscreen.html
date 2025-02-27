@@ -58,11 +58,12 @@
                 </label>
             </div>`;
             // If flag requires additional details ("specify" equals 1), add a hidden text input.
-            if (flag.specify === 1) {
-                checkboxHtml += `<div id="specify_${flag.id}" style="display: none; margin-left: 20px;">
-                                    <input type="text" class="form-control" placeholder="Specify details">
-                                 </div>`;
-            }
+            // removed specify 
+            // if (flag.specify === 1) {
+            //     checkboxHtml += `<div id="specify_${flag.id}" style="display: none; margin-left: 20px;">
+            //                         <input type="text" class="form-control" placeholder="Specify details">
+            //                      </div>`;
+            // }
             return checkboxHtml;
         }
 
@@ -108,12 +109,12 @@
         //          date to today; otherwise, it hides the field.
         // --------------------------------------------------
         function updateFollowupVisibility() {
-            let show = false;
-            document.querySelectorAll('.form-check-input:checked').forEach(function(checkbox) {
-                if (checkbox.getAttribute('data-followup') === "1") {
-                    show = true;
-                }
-            });
+            let show = true;
+            // document.querySelectorAll('.form-check-input:checked').forEach(function(checkbox) {
+            //     if (checkbox.getAttribute('data-followup') === "1") {
+            //         show = true;
+            //     }
+            // });
             
             document.getElementById('followupDateContainer').style.display = show ? 'block' : 'none';
             
@@ -251,11 +252,12 @@
                             // Toggle the display of child flags (if any) based on this checkbox's value.
                             toggleChildren(this.value);
                             // Check if there is a specify input linked to this flag.
-                            const specifyDiv = document.getElementById(`specify_${this.value}`);
-                            if (specifyDiv) {
-                                // Display the specify input if the checkbox is checked, otherwise hide it.
-                                specifyDiv.style.display = this.checked ? 'block' : 'none';
-                            }
+                            // remove specify fields
+                            // const specifyDiv = document.getElementById(`specify_${this.value}`);
+                            // if (specifyDiv) {
+                            //     // Display the specify input if the checkbox is checked, otherwise hide it.
+                            //     specifyDiv.style.display = this.checked ? 'block' : 'none';
+                            // }
                             // Remove this line since we don't need to toggle visibility anymore
                             // updateFollowupVisibility();
                         });
@@ -373,11 +375,11 @@
                         // Skip call origin radio buttons
                         if (!checkbox.name.includes('callOrigin')) {
                             checkbox.checked = false;
-                            const specifyDiv = document.getElementById(`specify_${checkbox.value}`);
-                            if (specifyDiv) {
-                                specifyDiv.style.display = 'none';
-                                specifyDiv.querySelector('input').value = '';
-                            }
+                            // const specifyDiv = document.getElementById(`specify_${checkbox.value}`);
+                            // if (specifyDiv) {
+                            //     specifyDiv.style.display = 'none';
+                            //     specifyDiv.querySelector('input').value = '';
+                            // }
                             const childrenDiv = document.getElementById(`children_${checkbox.value}`);
                             if (childrenDiv) {
                                 childrenDiv.style.display = 'none';
@@ -480,9 +482,9 @@
                     selectedFlagsElements.forEach(checkbox => {
                         if (checkbox.id.startsWith('flag_')) {
                             const flagId = checkbox.value;
-                            const specifyInput = document.getElementById(`specify_${flagId}`);
-                            const specifyValue = specifyInput ? specifyInput.querySelector('input').value : null;
-                            selectedFlags.push({ id: flagId, specify: specifyValue });
+                            // const specifyInput = document.getElementById(`specify_${flagId}`);
+                            // const specifyValue = specifyInput ? specifyInput.querySelector('input').value : null;
+                            // selectedFlags.push({ id: flagId, specify: specifyValue });
                         }
                     });
 
@@ -639,10 +641,10 @@
                             if (checkbox) {
                                 checkbox.checked = true;
                                 // Optionally, show the specify input if needed:
-                                const specifyDiv = document.getElementById(`specify_${flag.flag_id}`);
-                                if (specifyDiv) {
-                                    specifyDiv.style.display = 'block';
-                                }
+                                // const specifyDiv = document.getElementById(`specify_${flag.flag_id}`);
+                                // if (specifyDiv) {
+                                //     specifyDiv.style.display = 'block';
+                                // }
                                 // Show the children container if it exists to un-collapse any child flags.
                                 const childrenDiv = document.getElementById(`children_${flag.flag_id}`);
                                 if (childrenDiv) {
@@ -688,9 +690,10 @@
                             if (call.flags && Array.isArray(call.flags) && call.flags.length > 0) {
                                 let flagList = $('<ul></ul>');
                                 call.flags.forEach(flag => {
+                                    // removed specify
+                                    //  ${flag.flag_specify ? `${flag.flag_specify}` : ''}
                                     flagList.append(`<li>
-                                        <strong>${flag.flag_name}</strong> 
-                                        ${flag.flag_specify ? `${flag.flag_specify}` : ''}
+                                        <strong>${flag.flag_name}</strong>
                                     </li>`);
                                 });
                                 collapsible.append('<p><strong>Flags:</strong></p>');
@@ -721,9 +724,10 @@
                     if (call.flags && Array.isArray(call.flags) && call.flags.length > 0) {
                         let flagList = $('<ul></ul>');
                         call.flags.forEach(flag => {
+                            // remove specify
+                            // ${flag.flag_specify ? `${flag.flag_specify}` : ''}
                             flagList.append(`<li>
-                                <strong>${flag.flag_name}</strong> 
-                                ${flag.flag_specify ? `${flag.flag_specify}` : ''}
+                                <strong>${flag.flag_name}</strong>
                             </li>`);
                         });
                         collapsible.append('<p><strong>Flags:</strong></p>');
