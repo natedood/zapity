@@ -11,6 +11,7 @@
 
 CREATE TABLE `calls` (
   `id` int(11) NOT NULL,
+  `lead_status_id` int(11) NOT NULL DEFAULT 0,
   `call_origin` varchar(24) NOT NULL COMMENT '1=incoming,2=outgoing,3=incoming text, 4=outgoing text',
   `phone_number` bigint(20) NOT NULL,
   `caller_id_name` varchar(255) DEFAULT NULL,
@@ -176,6 +177,17 @@ CREATE TABLE `job_status_link` (
 CREATE TABLE `job_status_lookup` (
   `job_status_id` int(11) NOT NULL,
   `description` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `lead_statuses`
+--
+
+CREATE TABLE `lead_statuses` (
+  `id` int(11) NOT NULL,
+  `name` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
@@ -482,6 +494,12 @@ ALTER TABLE `job_status_lookup`
   ADD PRIMARY KEY (`job_status_id`);
 
 --
+-- Indexes for table `lead_statuses`
+--
+ALTER TABLE `lead_statuses`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `locations`
 --
 ALTER TABLE `locations`
@@ -647,6 +665,12 @@ ALTER TABLE `job_status_lookup`
   MODIFY `job_status_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `lead_statuses`
+--
+ALTER TABLE `lead_statuses`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `locations`
 --
 ALTER TABLE `locations`
@@ -769,4 +793,3 @@ ALTER TABLE `role_permissions`
 ALTER TABLE `user_roles`
   ADD CONSTRAINT `user_roles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   ADD CONSTRAINT `user_roles_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`);
-COMMIT;

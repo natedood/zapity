@@ -2,23 +2,57 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Intake</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <!-- Font Awesome -->
+    <!-- Include Bootstrap for layout and FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Include jQuery UI CSS for Tabs styling -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/smoothness/jquery-ui.css">
+
+    <!-- Include jQuery and jQuery UI JS libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+    
+    <style>
+        /* Optional: reduce padding/margins to better integrate with your design */
+        #tabs .ui-tabs-nav { margin: 0; padding: 0.5em; }
+        #tabs .ui-tabs-panel { padding: 1em; }
+    </style>
 </head>
  
 <body>
+
+    
+  <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="#">Rimspec</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="callscreen.html">Leads</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="todos.html">Todo</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="calllog.html">Call Log</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  
+<div data-role="header">
+  <h1>Intake</h1>
+</div>
+
     <div class="container">
-        <h1>Intake</h1>
         <form>
             <div class="form-group">
                 <label for="location">Location:</label>
@@ -30,7 +64,48 @@
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+
+            <div class="form-group">
+                <label for="rep">Rep:</label>
+                <select class="form-control" id="rep" name="rep"></select>
+            </div>
+
+            <script>
+                $('#location').change(function() {
+                    var locationId = $(this).val();
+                    loadReps(locationId);
+                });
+
+                function loadReps(locationId) {
+                    console.log('Requesting reps for location ID:', locationId);
+                    $.ajax({
+                        url: 'reps.php',
+                        method: 'GET',
+                        data: { location_id: locationId },
+                        dataType: 'json',
+                        success: function(response) {
+                            var repSelect = $('#rep');
+                            repSelect.empty();
+                            $.each(response, function(index, rep) {
+                                var option = $('<option>').val(rep.id).text(rep.rep_name);
+                                repSelect.append(option);
+                            });
+                            console.log('Reps loaded:', response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.log('Error:', error);
+                        }
+                    });
+                }
+
+                $(document).ready(function() {
+                    var initialLocationId = $('#location').val();
+                    if (initialLocationId) {
+                        loadReps(initialLocationId);
+                    }
+                });
+            </script>
+            <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
         </form>
     </div>
 
@@ -64,6 +139,11 @@
                 var option = $('<option>').val(location.id).text(location.location_name + ', ' + location.city + ' ' + location.state);
                 locationSelect.append(option);
             });
+            // Automatically load reps for the selected location (first option by default)
+            var selectedLocationId = locationSelect.val();
+            if (selectedLocationId) {
+                loadReps(selectedLocationId);
+            }
         }
         function loadLocationsAlphaSorted(){
             locationurl = 'locations.php?alphasort=1';
