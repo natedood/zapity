@@ -372,7 +372,7 @@
 
   // Function to open the call screen.
   function openCallScreen(phoneNumber) {
-      window.location.href = "callscreen.html?number=" + phoneNumber;
+      window.location.href = "leads.php?number=" + phoneNumber;
   }
 </script>
 
