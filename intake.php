@@ -45,9 +45,9 @@
   </nav>
 
   
-<div data-role="header">
-  <h1>Intake</h1>
-</div>
+    <div data-role="header">
+        <h1>Intake</h1>
+    </div>
 
     <div class="container">
         <form>

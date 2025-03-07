@@ -1,3 +1,5 @@
+<?php require_once 'header.php'; ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,11 +8,6 @@
     -->
     <title>Leads</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <!-- Redirect to leads.php -->
-    <script>
-        window.location.href = 'leads.php';
-    </script>
     
     <!--
       Include jQuery Mobile CSS for mobile-friendly UI components.
@@ -152,27 +149,8 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-        <a class="navbar-brand" href="#">Rimspec</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="callscreen.html">Leads</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="todos.html">Todo</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="calllog.html">Call Log</a>
-            </li>
-          </ul>
-        </div>
-      </nav>
+    <?php include 'nav.php'; ?>
 
-      
     <!--
       jQuery Mobile page container.
     -->
