@@ -11,12 +11,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Include jQuery UI CSS for Tabs styling -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/smoothness/jquery-ui.css">
-
     <!-- Include jQuery and jQuery UI JS libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
-    
     <style>
         /* Optional: reduce padding/margins to better integrate with your design */
         #tabs .ui-tabs-nav { margin: 0; padding: 0.5em; }
@@ -26,7 +24,6 @@
  
 <body>
 
-    
   <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
     <a class="navbar-brand" href="#">Rimspec</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +67,71 @@
                 <select class="form-control" id="rep" name="rep"></select>
             </div>
 
+            <div class="form-group">
+                <label>Type:</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="type" id="retail" value="retail">
+                    <label class="form-check-label" for="retail">Retail</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="type" id="wholesale" value="wholesale">
+                    <label class="form-check-label" for="wholesale">Wholesale</label>
+                </div>
+            </div>
+
+            <div id="retail-info" class="form-group" style="display: none;">
+                <label for="retail-info">Retail Information:</label>
+            </div>
+
+            <div id="wholesale-info" class="form-group" style="display: none;">
+                <label for="wholesale-info">Wholesale Information:</label>
+            </div>
+
             <script>
+                $('input[name="type"]').change(function() {
+                    $('#retail-info').toggle($('#retail').is(':checked'));
+                    $('#wholesale-info').toggle($('#wholesale').is(':checked'));
+                });
+
+                $(document).ready(function() {
+                    $('input[name="type"]:checked').each(function() {
+                        if (this.id === 'retail') {
+                            $('#retail-info').show();
+                        } else if (this.id === 'wholesale') {
+                            $('#wholesale-info').show();
+                        }
+                    });
+                });
+            </script>
+
+
+            <script>
+                function updateTypeRadioGetLocation(){
+                    var locationId = $('#location').val();
+                    updateTypeRadio(locationId);
+                }
+                function updateTypeRadio(locationId) {
+                    if (locationId != 53) { // location 53 = rimspec offices - brittle, TODO: use a DB flag
+                        $('#wholesale').prop('checked', true);
+                    } else {
+                        $('#retail').prop('checked', true);
+                    }
+                    $('input[name="type"]').change();
+                }
+
+                $('#location').change(function() {
+                    var locationId = $(this).val();
+                    loadReps(locationId);
+                    updateTypeRadio(locationId);
+                });
+
+                $(document).ready(function() {
+                    var initialLocationId = $('#location').val();
+                    if (initialLocationId) {
+                        updateTypeRadio(initialLocationId);
+                    }
+                });
+
                 $('#location').change(function() {
                     var locationId = $(this).val();
                     loadReps(locationId);
@@ -91,6 +152,7 @@
                                 repSelect.append(option);
                             });
                             console.log('Reps loaded:', response);
+                            updateTypeRadioGetLocation();
                         },
                         error: function(xhr, status, error) {
                             console.log('Error:', error);
@@ -112,7 +174,7 @@
     <script>
         var lon;
         var lat;
-        //$(document).ready(function() {
+        
         function loadLocationsLonLat(lon,lat) {
             locationurl = 'locations.php?lon=' + lon + '&lat=' + lat;
             loadLocationsUrl(locationurl);
@@ -125,6 +187,7 @@
                 dataType: 'json',
                 success: function(response) {
                     loadLocationsSelect(response);
+                    updateTypeRadioGetLocation();
                 },
                 error: function(xhr, status, error) {
                     console.log('Error:', error);
@@ -166,9 +229,7 @@
         $(document).ready(function() {
             loadLocations();
         });
-        //});
-
-
+        
     </script>
 
 </body>
