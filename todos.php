@@ -26,7 +26,7 @@
     <script>
       
       function openCallScreen(phoneNumber) {
-        window.location.href = `callscreen.html?number=${phoneNumber}&todo=1`;
+        window.location.href = `leads.php?number=${phoneNumber}&todo=1`;
       }
 
       function setTodoStatus(todoId, statusId = 1) {
