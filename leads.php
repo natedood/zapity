@@ -486,9 +486,7 @@
                     selectedFlagsElements.forEach(checkbox => {
                         if (checkbox.id.startsWith('flag_')) {
                             const flagId = checkbox.value;
-                            // const specifyInput = document.getElementById(`specify_${flagId}`);
-                            // const specifyValue = specifyInput ? specifyInput.querySelector('input').value : null;
-                            // selectedFlags.push({ id: flagId, specify: specifyValue });
+                            selectedFlags.push({ id: flagId });
                         }
                     });
 
@@ -549,7 +547,7 @@
                             // Clear the form after a successful save.
                             clearFormData();
                             if (clearTodo === 1) {
-                                window.location.href = 'todos.html';
+                                window.location.href = 'todos.php';
                             }
                         },
                         error: function(xhr, status, error) {
@@ -557,16 +555,11 @@
                         }
                     });
                 }
-                
-            
-                // Event listener for saveDoneButton.
-                // When clicked, it calls saveFormData with clearTodo set to 1.
-                // if(document.getElementById('saveDoneButton')) {
-                //     document.getElementById('saveDoneButton').addEventListener('click', function() {
-                //         saveFormData(1);
 
-                //     });
-                
+                // Event listener for saveButton.
+                document.getElementById('saveButton').addEventListener('click', function() {
+                    saveFormData(0);
+                });
             </script>
         </div>
         
@@ -802,9 +795,9 @@
         });
         
         // Existing event listener for saveButton.
-        document.getElementById('saveButton').addEventListener('click', function() {
-            saveFormData(0);
-        });
+        // document.getElementById('saveButton').addEventListener('click', function() {
+        //     saveFormData(0);
+        // });
         
     </script>
 </body>

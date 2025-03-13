@@ -3,6 +3,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+include 'checksession.php';
 include 'db_connect.php';
 
 // Get the 'number' query parameter
@@ -17,7 +18,7 @@ $sql = "SELECT
             c.call_origin, 
             c.phone_number, 
             c.caller_id_name, 
-            DATE_SUB(c.call_datetime, INTERVAL 6 HOUR) AS call_datetime, 
+            c.call_datetime, 
             c.customer_id, 
             c.notes, 
             c.message,
@@ -28,10 +29,14 @@ $sql = "SELECT
             cf.followup, 
             cfl.specify AS flag_specify
         FROM calls c
-        JOIN calls_flags_link cfl ON c.id = cfl.call_id
-        JOIN call_flags cf ON cfl.call_flag_id = cf.id
+        LEFT JOIN calls_flags_link cfl ON c.id = cfl.call_id
+        LEFT JOIN call_flags cf ON cfl.call_flag_id = cf.id
         WHERE c.phone_number = ?
         ORDER BY call_datetime DESC, c.id DESC";
+
+// Print out the SQL with the parameter value for debugging
+// $debug_sql = str_replace('?', "'$phone_number'", $sql);
+// echo "<pre>SQL QUERY:\n" . $debug_sql . "</pre>";
 
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
@@ -63,14 +68,18 @@ while ($row = $result->fetch_assoc()) {
             'flags' => array()
         );
     }
-    $rows[$id]['flags'][] = array(
-        'flag_id' => $row['flag_id'],
-        'flag_name' => $row['flag_name'],
-        'display_order' => $row['display_order'],
-        'specify' => $row['specify'],
-        'followup' => $row['followup'],
-        'flag_specify' => $row['flag_specify']
-    );
+    
+    // Only add flag data if it exists (flag_id is not NULL)
+    if (!is_null($row['flag_id'])) {
+        $rows[$id]['flags'][] = array(
+            'flag_id' => $row['flag_id'],
+            'flag_name' => $row['flag_name'],
+            'display_order' => $row['display_order'],
+            'specify' => $row['specify'],
+            'followup' => $row['followup'],
+            'flag_specify' => $row['flag_specify']
+        );
+    }
 }
 $rows = array_values($rows); // Re-index the array to remove gaps in keys
 

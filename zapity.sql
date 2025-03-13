@@ -1,13 +1,5 @@
-
---
--- Database: `zapity`
---
-
--- --------------------------------------------------------
-
---
--- Table structure for table `calls`
---
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
 
 CREATE TABLE `calls` (
   `id` int(11) NOT NULL,
@@ -21,24 +13,12 @@ CREATE TABLE `calls` (
   `message` mediumtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `calls_flags_link`
---
-
 CREATE TABLE `calls_flags_link` (
   `id` int(11) NOT NULL,
   `call_id` int(11) DEFAULT NULL,
   `call_flag_id` int(11) DEFAULT NULL,
   `specify` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `call_flags`
---
 
 CREATE TABLE `call_flags` (
   `id` int(11) NOT NULL,
@@ -49,11 +29,19 @@ CREATE TABLE `call_flags` (
   `followup` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `customers`
---
+CREATE TABLE `call_history_import` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `user` varchar(100) NOT NULL,
+  `call_type` varchar(10) NOT NULL,
+  `source_number` varchar(20) NOT NULL,
+  `destination_number` varchar(20) NOT NULL,
+  `cost` decimal(10,2) NOT NULL,
+  `duration` time NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `call_datetime` datetime NOT NULL,
+  `call_status` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `calls_id` int(11) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `customers` (
   `id` int(11) NOT NULL,
@@ -64,12 +52,6 @@ CREATE TABLE `customers` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `type_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `customer_addresses`
---
 
 CREATE TABLE `customer_addresses` (
   `address_id` int(11) NOT NULL,
@@ -85,24 +67,12 @@ CREATE TABLE `customer_addresses` (
   `longitude` decimal(9,6) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `customer_notes`
---
-
 CREATE TABLE `customer_notes` (
   `note_id` int(11) NOT NULL,
   `customer_id` int(11) NOT NULL,
   `note` text NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `customer_phones`
---
 
 CREATE TABLE `customer_phones` (
   `phone_id` int(11) NOT NULL,
@@ -111,22 +81,10 @@ CREATE TABLE `customer_phones` (
   `phone_type` enum('home','work','mobile') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `customer_types`
---
-
 CREATE TABLE `customer_types` (
   `type_id` int(11) NOT NULL,
   `type_name` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `jobs`
---
 
 CREATE TABLE `jobs` (
   `job_id` int(11) NOT NULL,
@@ -136,12 +94,6 @@ CREATE TABLE `jobs` (
   `latest_delivery` date DEFAULT NULL,
   `notes` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `job_items`
---
 
 CREATE TABLE `job_items` (
   `job_item_id` int(11) NOT NULL,
@@ -153,12 +105,6 @@ CREATE TABLE `job_items` (
   `product_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `job_status_link`
---
-
 CREATE TABLE `job_status_link` (
   `job_status_link_id` int(11) NOT NULL,
   `job_id` int(11) NOT NULL,
@@ -168,33 +114,15 @@ CREATE TABLE `job_status_link` (
   `estimated_delivery` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `job_status_lookup`
---
-
 CREATE TABLE `job_status_lookup` (
   `job_status_id` int(11) NOT NULL,
   `description` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `lead_statuses`
---
-
 CREATE TABLE `lead_statuses` (
   `id` int(11) NOT NULL,
   `name` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `locations`
---
 
 CREATE TABLE `locations` (
   `id` int(11) NOT NULL,
@@ -208,22 +136,17 @@ CREATE TABLE `locations` (
   `gps_long` decimal(9,6) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `permissions`
---
+CREATE TABLE `location_reps` (
+  `id` int(11) NOT NULL,
+  `location_id` int(11) DEFAULT NULL,
+  `rep_name` varchar(255) NOT NULL,
+  `phone` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 CREATE TABLE `permissions` (
   `permission_id` int(11) NOT NULL,
   `permission_name` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `photos`
---
 
 CREATE TABLE `photos` (
   `id` int(11) NOT NULL,
@@ -231,12 +154,6 @@ CREATE TABLE `photos` (
   `directory` varchar(255) NOT NULL,
   `date_time_created` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `photo_links`
---
 
 CREATE TABLE `photo_links` (
   `id` int(11) NOT NULL,
@@ -246,22 +163,10 @@ CREATE TABLE `photo_links` (
   `date_time_created` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `photo_types`
---
-
 CREATE TABLE `photo_types` (
   `id` int(11) NOT NULL,
   `description` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `product`
---
 
 CREATE TABLE `product` (
   `id` int(11) NOT NULL,
@@ -275,12 +180,6 @@ CREATE TABLE `product` (
   `price` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `product_category`
---
-
 CREATE TABLE `product_category` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -288,12 +187,6 @@ CREATE TABLE `product_category` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `qb_customers`
---
 
 CREATE TABLE `qb_customers` (
   `Id` int(11) NOT NULL,
@@ -327,33 +220,15 @@ CREATE TABLE `qb_customers` (
   `time` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `roles`
---
-
 CREATE TABLE `roles` (
   `role_id` int(11) NOT NULL,
   `role_name` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `role_permissions`
---
-
 CREATE TABLE `role_permissions` (
   `role_id` int(11) DEFAULT NULL,
   `permission_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `todos`
---
 
 CREATE TABLE `todos` (
   `id` int(11) NOT NULL,
@@ -367,22 +242,10 @@ CREATE TABLE `todos` (
   `due_datetime` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `todo_types`
---
-
 CREATE TABLE `todo_types` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `users`
---
 
 CREATE TABLE `users` (
   `user_id` int(11) NOT NULL,
@@ -394,402 +257,227 @@ CREATE TABLE `users` (
   `last_name` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `user_roles`
---
-
 CREATE TABLE `user_roles` (
   `user_id` int(11) DEFAULT NULL,
   `role_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
---
--- Indexes for dumped tables
---
 
---
--- Indexes for table `calls`
---
 ALTER TABLE `calls`
   ADD PRIMARY KEY (`id`);
 
---
--- Indexes for table `calls_flags_link`
---
 ALTER TABLE `calls_flags_link`
   ADD PRIMARY KEY (`id`),
   ADD KEY `call_id` (`call_id`),
   ADD KEY `call_flag_id` (`call_flag_id`);
 
---
--- Indexes for table `call_flags`
---
 ALTER TABLE `call_flags`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_display_order` (`display_order`);
 
---
--- Indexes for table `customers`
---
+ALTER TABLE `call_history_import`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_call_datetime` (`call_datetime`);
+
 ALTER TABLE `customers`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`),
   ADD KEY `type_id` (`type_id`);
 
---
--- Indexes for table `customer_addresses`
---
 ALTER TABLE `customer_addresses`
   ADD PRIMARY KEY (`address_id`),
   ADD KEY `customer_id` (`customer_id`);
 
---
--- Indexes for table `customer_notes`
---
 ALTER TABLE `customer_notes`
   ADD PRIMARY KEY (`note_id`),
   ADD KEY `customer_id` (`customer_id`);
 
---
--- Indexes for table `customer_phones`
---
 ALTER TABLE `customer_phones`
   ADD PRIMARY KEY (`phone_id`),
   ADD KEY `customer_id` (`customer_id`);
 
---
--- Indexes for table `customer_types`
---
 ALTER TABLE `customer_types`
   ADD PRIMARY KEY (`type_id`);
 
---
--- Indexes for table `jobs`
---
 ALTER TABLE `jobs`
   ADD PRIMARY KEY (`job_id`);
 
---
--- Indexes for table `job_items`
---
 ALTER TABLE `job_items`
   ADD PRIMARY KEY (`job_item_id`),
   ADD KEY `job_id` (`job_id`),
   ADD KEY `fk_product_id` (`product_id`);
 
---
--- Indexes for table `job_status_link`
---
 ALTER TABLE `job_status_link`
   ADD PRIMARY KEY (`job_status_link_id`),
   ADD KEY `job_id` (`job_id`),
   ADD KEY `job_status_id` (`job_status_id`);
 
---
--- Indexes for table `job_status_lookup`
---
 ALTER TABLE `job_status_lookup`
   ADD PRIMARY KEY (`job_status_id`);
 
---
--- Indexes for table `lead_statuses`
---
 ALTER TABLE `lead_statuses`
   ADD PRIMARY KEY (`id`);
 
---
--- Indexes for table `locations`
---
 ALTER TABLE `locations`
   ADD PRIMARY KEY (`id`);
 
---
--- Indexes for table `permissions`
---
+ALTER TABLE `location_reps`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `location_id` (`location_id`);
+
 ALTER TABLE `permissions`
   ADD PRIMARY KEY (`permission_id`);
 
---
--- Indexes for table `photos`
---
 ALTER TABLE `photos`
   ADD PRIMARY KEY (`id`);
 
---
--- Indexes for table `photo_links`
---
 ALTER TABLE `photo_links`
   ADD PRIMARY KEY (`id`),
   ADD KEY `photo_id` (`photo_id`),
   ADD KEY `photo_link_type_id` (`photo_link_type_id`);
 
---
--- Indexes for table `photo_types`
---
 ALTER TABLE `photo_types`
   ADD PRIMARY KEY (`id`);
 
---
--- Indexes for table `product`
---
 ALTER TABLE `product`
   ADD PRIMARY KEY (`id`),
   ADD KEY `category_id` (`category_id`);
 
---
--- Indexes for table `product_category`
---
 ALTER TABLE `product_category`
   ADD PRIMARY KEY (`id`);
 
---
--- Indexes for table `qb_customers`
---
 ALTER TABLE `qb_customers`
   ADD PRIMARY KEY (`Id`);
 
---
--- Indexes for table `roles`
---
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`role_id`);
 
---
--- Indexes for table `role_permissions`
---
 ALTER TABLE `role_permissions`
   ADD KEY `role_id` (`role_id`),
   ADD KEY `permission_id` (`permission_id`);
 
---
--- Indexes for table `todos`
---
 ALTER TABLE `todos`
   ADD PRIMARY KEY (`id`);
 
---
--- Indexes for table `todo_types`
---
 ALTER TABLE `todo_types`
   ADD PRIMARY KEY (`id`);
 
---
--- Indexes for table `users`
---
 ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`);
 
---
--- Indexes for table `user_roles`
---
 ALTER TABLE `user_roles`
   ADD KEY `user_id` (`user_id`),
   ADD KEY `role_id` (`role_id`);
 
---
--- AUTO_INCREMENT for dumped tables
---
 
---
--- AUTO_INCREMENT for table `calls`
---
 ALTER TABLE `calls`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `calls_flags_link`
---
 ALTER TABLE `calls_flags_link`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `call_flags`
---
 ALTER TABLE `call_flags`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `customers`
---
+ALTER TABLE `call_history_import`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `customers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `customer_addresses`
---
 ALTER TABLE `customer_addresses`
   MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `customer_notes`
---
 ALTER TABLE `customer_notes`
   MODIFY `note_id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `customer_phones`
---
 ALTER TABLE `customer_phones`
   MODIFY `phone_id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `customer_types`
---
 ALTER TABLE `customer_types`
   MODIFY `type_id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `jobs`
---
 ALTER TABLE `jobs`
   MODIFY `job_id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `job_items`
---
 ALTER TABLE `job_items`
   MODIFY `job_item_id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `job_status_link`
---
 ALTER TABLE `job_status_link`
   MODIFY `job_status_link_id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `job_status_lookup`
---
 ALTER TABLE `job_status_lookup`
   MODIFY `job_status_id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `lead_statuses`
---
 ALTER TABLE `lead_statuses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `locations`
---
 ALTER TABLE `locations`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `photos`
---
+ALTER TABLE `location_reps`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `photos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `photo_links`
---
 ALTER TABLE `photo_links`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `photo_types`
---
 ALTER TABLE `photo_types`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `product`
---
 ALTER TABLE `product`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `product_category`
---
 ALTER TABLE `product_category`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `todos`
---
 ALTER TABLE `todos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `todo_types`
---
 ALTER TABLE `todo_types`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- Constraints for dumped tables
---
 
---
--- Constraints for table `calls_flags_link`
---
 ALTER TABLE `calls_flags_link`
   ADD CONSTRAINT `calls_flags_link_ibfk_1` FOREIGN KEY (`call_id`) REFERENCES `calls` (`id`),
   ADD CONSTRAINT `calls_flags_link_ibfk_2` FOREIGN KEY (`call_flag_id`) REFERENCES `call_flags` (`id`);
 
---
--- Constraints for table `customers`
---
 ALTER TABLE `customers`
   ADD CONSTRAINT `customers_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `customer_types` (`type_id`);
 
---
--- Constraints for table `customer_addresses`
---
 ALTER TABLE `customer_addresses`
   ADD CONSTRAINT `customer_addresses_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE;
 
---
--- Constraints for table `customer_notes`
---
 ALTER TABLE `customer_notes`
   ADD CONSTRAINT `customer_notes_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE;
 
---
--- Constraints for table `customer_phones`
---
 ALTER TABLE `customer_phones`
   ADD CONSTRAINT `customer_phones_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE;
 
---
--- Constraints for table `job_items`
---
 ALTER TABLE `job_items`
   ADD CONSTRAINT `fk_product_id` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`),
   ADD CONSTRAINT `job_items_ibfk_1` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`job_id`);
 
---
--- Constraints for table `job_status_link`
---
 ALTER TABLE `job_status_link`
   ADD CONSTRAINT `job_status_link_ibfk_1` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`job_id`),
   ADD CONSTRAINT `job_status_link_ibfk_2` FOREIGN KEY (`job_status_id`) REFERENCES `job_status_lookup` (`job_status_id`);
 
---
--- Constraints for table `photo_links`
---
+ALTER TABLE `location_reps`
+  ADD CONSTRAINT `location_reps_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `locations` (`id`);
+
 ALTER TABLE `photo_links`
   ADD CONSTRAINT `photo_links_ibfk_1` FOREIGN KEY (`photo_id`) REFERENCES `photos` (`id`),
   ADD CONSTRAINT `photo_links_ibfk_2` FOREIGN KEY (`photo_link_type_id`) REFERENCES `photo_types` (`id`);
 
---
--- Constraints for table `product`
---
 ALTER TABLE `product`
   ADD CONSTRAINT `product_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `product_category` (`id`);
 
---
--- Constraints for table `role_permissions`
---
 ALTER TABLE `role_permissions`
   ADD CONSTRAINT `role_permissions_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`),
   ADD CONSTRAINT `role_permissions_ibfk_2` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`permission_id`);
 
---
--- Constraints for table `user_roles`
---
 ALTER TABLE `user_roles`
   ADD CONSTRAINT `user_roles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   ADD CONSTRAINT `user_roles_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`);

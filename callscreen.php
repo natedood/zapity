@@ -2,7 +2,8 @@
 // Enable error reporting for debugging (remove or disable for production!)
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
+// Include the session check script
+include 'checksession.php';
 include 'db_connect.php';
 
 // Decode the JSON data from the AJAX POST request
@@ -44,7 +45,8 @@ if (isset($data['clearTodo']) && $data['clearTodo'] == 1) {
 }
 
 // Insert into the calls table, including the call_origin field
-$call_datetime = date('Y-m-d H:i:s');
+// Adjust time by -6 hours to convert from UTC to CST
+$call_datetime = date('Y-m-d H:i:s', strtotime('-5 hours'));
 $stmt = $conn->prepare("INSERT INTO calls (phone_number, call_datetime, call_origin, notes, caller_id_name) VALUES (?, ?, ?, ?, ?)");
 if (!$stmt) {
     die("Prepare failed (calls): " . $conn->error);
