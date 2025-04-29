@@ -21,12 +21,16 @@ $noFollowUp = (isset($_GET['nofollowup']) && $_GET['nofollowup'] == '1') ? 1 : 0
 
 // Start building the SQL query.
 // We join calls_flags_link and call_flags to get the flag names, then GROUP_CONCAT them.
-$sql = "SELECT calls.*, 
-               GROUP_CONCAT(cf.flag_name ORDER BY cf.display_order SEPARATOR ', ') AS flags
+$sql = "
+SELECT calls.*, 
+               GROUP_CONCAT(cf.flag_name ORDER BY cf.display_order SEPARATOR ', ') AS flags,
+               users.first_name as first_name
         FROM calls 
         LEFT JOIN calls_flags_link cfl ON calls.id = cfl.call_id
         LEFT JOIN call_flags cf ON cfl.call_flag_id = cf.id
-        WHERE DATE(call_datetime) BETWEEN ? AND ? ";
+        LEFT JOIN users ON calls.user_id = users.user_id
+        WHERE DATE(call_datetime) BETWEEN ? AND ? 
+        ";
 
 // If an origin filter is provided, process the comma-delimited values.
 if ($originParam != '') {

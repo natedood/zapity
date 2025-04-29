@@ -144,6 +144,7 @@
             <th class="sortable" data-type="string">Name</th>
             <th class="sortable" data-type="date">Date</th>
             <th class="sortable" data-type="string">Origin</th>
+            <th class="sortable" data-type="string">User</th>
             <th class="sortable" data-type="string">Flags</th>
           </tr>
         </thead>
@@ -328,19 +329,25 @@
                       <td>${call.caller_id_name || ""}</td>
                       <td>${new Date(call.call_datetime).toLocaleDateString()}</td>
                       <td>${call.call_origin}</td>
+                      <td>${call.first_name || ""}</td> <!-- Add the User column -->
                       <td>${call.flags ? call.flags : ""}</td>
                   </tr>`;
-                  
-                  // Extra row for displaying notes, spanning across all 6 columns.
+              
+                  // Extra row for displaying notes, spanning across all 7 columns.
                   var notesRow = `<tr>
-                      <td colspan="6" class="text-muted">
+                      <td colspan="7" class="text-muted">
                         <small>${call.notes ? call.notes : ''}</small>
                       </td>
                   </tr>`;
-                  
+              
                   tbody.append(row);
                   tbody.append(notesRow);
               });
+              
+              // Update running totals.
+              var totalResults = data.length;
+              $("#resultCountTop").text("Total results: " + totalResults);
+              $("#resultCountBottom").text("Total results: " + totalResults);
               
               // Update the chart with the call log data.
               updateChart(data);

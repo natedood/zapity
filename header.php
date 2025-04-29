@@ -14,16 +14,30 @@ if (!in_array($current_file, $excluded_files)) {
 ?>
 
 <script>
-// Countdown timer in seconds (2 minutes = 120 seconds)
+// Countdown timer in seconds (2 hours = 7200 seconds)
 let countdown = 7200;
+
+// Store the start time in localStorage to persist across browser sessions
+if (!localStorage.getItem('logoutStartTime')) {
+    localStorage.setItem('logoutStartTime', Date.now());
+}
 
 // Function to update the countdown timer
 function updateCountdown() {
-    countdown--;
+    // Calculate the elapsed time in seconds
+    const startTime = parseInt(localStorage.getItem('logoutStartTime'), 10);
+    const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
 
-    // If countdown reaches 0, redirect to login page
-    if (countdown <= 0) {
+    // Calculate the remaining time
+    const remainingTime = countdown - elapsedTime;
+
+    // If countdown reaches 0, redirect to the logout page
+    if (remainingTime <= 0) {
+        localStorage.removeItem('logoutStartTime'); // Clear the stored time
         window.location.href = 'logout.php';
+    } else {
+        // Optionally, update a visible countdown timer on the page
+        console.log(`Time remaining: ${remainingTime} seconds`);
     }
 }
 

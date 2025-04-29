@@ -44,14 +44,20 @@ if (isset($data['clearTodo']) && $data['clearTodo'] == 1) {
     $stmt->close();
 }
 
-// Insert into the calls table, including the call_origin field
+// Ensure the session is started
+session_start();
+
+// Get the user ID from the session
+$user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
+
+// Insert into the calls table, including the call_origin field and user_id
 // Adjust time by -6 hours to convert from UTC to CST
 $call_datetime = date('Y-m-d H:i:s', strtotime('-5 hours'));
-$stmt = $conn->prepare("INSERT INTO calls (phone_number, call_datetime, call_origin, notes, caller_id_name) VALUES (?, ?, ?, ?, ?)");
+$stmt = $conn->prepare("INSERT INTO calls (phone_number, call_datetime, call_origin, notes, caller_id_name, user_id) VALUES (?, ?, ?, ?, ?, ?)");
 if (!$stmt) {
     die("Prepare failed (calls): " . $conn->error);
 }
-$stmt->bind_param("sssss", $phone_number, $call_datetime, $call_origin, $call_notes, $caller_id_name);
+$stmt->bind_param("sssssi", $phone_number, $call_datetime, $call_origin, $call_notes, $caller_id_name, $user_id);
 if (!$stmt->execute()) {
     die("Execute failed (calls): " . $stmt->error);
 }
