@@ -15,7 +15,7 @@ if (!in_array($current_file, $excluded_files)) {
 
 <script>
 // Countdown timer in seconds (2 hours = 7200 seconds)
-let countdown = 7200;
+let countdown = 1800;
 
 // Store the start time in localStorage to persist across browser sessions
 if (!localStorage.getItem('logoutStartTime')) {
@@ -37,10 +37,19 @@ function updateCountdown() {
         window.location.href = 'logout.php';
     } else {
         // Optionally, update a visible countdown timer on the page
-        console.log(`Time remaining: ${remainingTime} seconds`);
+        const hours = Math.floor(remainingTime / 3600);
+        const minutes = Math.floor((remainingTime % 3600) / 60);
+        const seconds = remainingTime % 60;
+        console.log(`Time remaining: ${hours}h ${minutes}m ${seconds}s`);
     }
 }
 
-// Update the countdown every second
-setInterval(updateCountdown, 1000);
+// Use `requestAnimationFrame` to ensure the countdown updates even in throttled tabs
+function startCountdown() {
+    updateCountdown();
+    requestAnimationFrame(startCountdown);
+}
+
+// Start the countdown
+startCountdown();
 </script>

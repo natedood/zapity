@@ -6,7 +6,56 @@ ini_set('display_errors', 1);
 include 'checksession.php';
 include 'db_connect.php';
 
-// Get the 'number' query parameter
+// Check if 'partial_number' is provided
+if (isset($_GET['partial_number']) && !empty($_GET['partial_number'])) {
+    $partial_number = '%' . $_GET['partial_number'] . '%'; // Add wildcard for partial matching
+
+    // Prepare the SQL query for partial phone number search
+    $sql = "SELECT 
+                c.id, 
+                c.phone_number, 
+                c.caller_id_name, 
+                c.call_datetime
+            FROM (
+                SELECT DISTINCT phone_number
+                FROM calls
+                WHERE phone_number LIKE ?
+                ORDER BY call_datetime DESC
+                LIMIT 50
+            ) AS recent_calls
+            JOIN calls c ON recent_calls.phone_number = c.phone_number
+            GROUP BY c.phone_number
+            ORDER BY c.call_datetime DESC
+            LIMIT 10";
+            
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Prepare failed: " . $conn->error);
+    }
+
+    // Bind the partial phone number parameter
+    $stmt->bind_param("s", $partial_number);
+
+    // Execute the query
+    if (!$stmt->execute()) {
+        die("Execute failed: " . $stmt->error);
+    }
+
+    $result = $stmt->get_result();
+    $rows = array();
+    while ($row = $result->fetch_assoc()) {
+        $rows[] = $row;
+    }
+
+    $stmt->close();
+    $conn->close();
+
+    // Return the results as JSON
+    echo json_encode($rows);
+    exit;
+}
+
+// Existing code for full phone number search
 if (!isset($_GET['number']) || empty($_GET['number'])) {
     die("No phone number provided.");
 }
@@ -33,10 +82,6 @@ $sql = "SELECT
         LEFT JOIN call_flags cf ON cfl.call_flag_id = cf.id
         WHERE c.phone_number = ?
         ORDER BY call_datetime DESC, c.id DESC";
-
-// Print out the SQL with the parameter value for debugging
-// $debug_sql = str_replace('?', "'$phone_number'", $sql);
-// echo "<pre>SQL QUERY:\n" . $debug_sql . "</pre>";
 
 $stmt = $conn->prepare($sql);
 if (!$stmt) {

@@ -105,7 +105,7 @@
             data.forEach(function(call) {
               var row = `<tr>
                 <td>
-                  <button class="btn btn-success">
+                  <button class="btn btn-success" onclick="openCallScreen('${call.phone_number}')">
                     <i class="fas fa-folder-open" onclick="openCallScreen('${call.phone_number}')"></i>
                   </button>
                 </td>

@@ -489,7 +489,7 @@
                             selectedFlags.push({ id: flagId });
                         }
                     });
-
+            
                     // Retrieve the follow-up date and call notes values.
                     const followupDate = document.getElementById('followupDate').value;
                     const callNotes = document.getElementById('callnotes').value;
@@ -500,11 +500,11 @@
                     // Get the caller ID name value.
                     const callerIdNameField = document.getElementById('caller_id_name');
                     const callerIdName = callerIdNameField ? callerIdNameField.value : '';
-
+            
                     // Retrieve the "Close Lead" value.
                     const closeLeadCheckbox = document.getElementById('close_lead');
                     const closeLead = closeLeadCheckbox.checked ? 1 : 0;
-
+            
                     // If Close Lead is selected, get the lead result value.
                     let leadResult = null;
                     if (closeLead) {
@@ -513,7 +513,7 @@
                             leadResult = parseInt(leadResultRadio.value, 10);
                         }
                     }
-
+            
                     // Create an object with the collected form data.
                     const formData = {
                         phone_number: phoneNumber,
@@ -526,7 +526,7 @@
                         lead_result: leadResult,
                         clearTodo: 0
                     };
-
+            
                     // Add the clearTodo property if clearTodo parameter is provided.
                     if (clearTodo) {
                         formData.clearTodo = clearTodo;
@@ -534,7 +534,7 @@
                     
                     // Output the JSON data to the console before posting it.
                     console.log("JSON Data:", JSON.stringify(formData, null, 2));
-
+            
                     // Send an AJAX request to callscreen.php with the JSON data.
                     $.ajax({
                         url: 'callscreen.php',
@@ -555,12 +555,92 @@
                         }
                     });
                 }
-
+            
                 // Event listener for saveButton.
                 document.getElementById('saveButton').addEventListener('click', function() {
                     saveFormData(0);
                 });
+            
+                // Function to fetch the most recent 10 calls based on a partial phone number
+                function fetchRecentCalls(partialPhoneNumber) {
+                    if (partialPhoneNumber.length < 3) {
+                        // Clear the dropdown if the input is less than 3 characters
+                        $("#recentCallsDropdown").empty().hide();
+                        return;
+                    }
+            
+                    $.ajax({
+                        url: 'callscreen_getcalls2.php',
+                        type: 'GET',
+                        data: {
+                            partial_number: partialPhoneNumber // Pass the partial phone number
+                        },
+                        success: function(response) {
+                            const data = JSON.parse(response);
+                            displayRecentCallsDropdown(data);
+                        },
+                        error: function(xhr, status, error) {
+                            console.log('AJAX error:', status, error);
+                        }
+                    });
+                }
+            
+                // Function to display the dropdown with recent calls
+                // Function to display the dropdown with recent calls
+                function displayRecentCallsDropdown(calls) {
+                    const dropdown = $("#recentCallsDropdown");
+                    const phoneNumberInput = $("#phone_number");
+                    dropdown.empty(); // Clear existing items
+                
+                    if (calls.length === 0) {
+                        dropdown.hide(); // Hide the dropdown if no results
+                        return;
+                    }
+                
+                    // Position the dropdown below the phone_number input field
+                    const inputOffset = phoneNumberInput.offset();
+                    const inputHeight = phoneNumberInput.outerHeight();
+                    dropdown.css({
+                        top: inputOffset.top + inputHeight, // Position below the input field
+                        left: inputOffset.left, // Align with the left edge of the input field
+                        width: phoneNumberInput.outerWidth(), // Match the width of the input field
+                        display: 'block', // Ensure the dropdown is visible
+                    });
+                
+                    // Populate the dropdown with the recent calls
+                    calls.forEach(call => {
+                        const formattedPhoneNumber = formatPhoneNumber(call.phone_number);
+                        const listItem = $(`<div class="dropdown-item">${formattedPhoneNumber} - ${call.caller_id_name || 'Unknown'}</div>`);
+                        listItem.on('click', function() {
+                            // Populate the phone_number field and trigger searchAllCalls
+                            phoneNumberInput.val(formattedPhoneNumber);
+                            searchAllCalls(call.phone_number);
+                            dropdown.empty().hide(); // Clear and hide the dropdown
+                        });
+                        dropdown.append(listItem);
+                    });
+                }
+            
+                // Event listener for the phone_number input field
+                $("#phone_number").on('input', function(e) {
+                    const partialPhoneNumber = e.target.value.replace(/[^\d]/g, ''); // Remove non-digit characters
+                    fetchRecentCalls(partialPhoneNumber); // Fetch recent calls based on the partial number
+                });
             </script>
+            
+            <!-- Add a dropdown container below the phone_number input field -->
+            <div id="recentCallsDropdown" class="dropdown-menu" style="display: none; position: absolute; z-index: 1000;">
+                <style>
+                    #recentCallsDropdown {
+                        max-height: 200px; /* Limit the height of the dropdown */
+                        overflow-y: auto; /* Add a scrollbar if the content exceeds the height */
+                        border: 1px solid #ccc; /* Add a border for better visibility */
+                        background-color: #fff; /* Ensure the background is white */
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+                        z-index: 1000; /* Ensure it appears above other elements */
+                    }
+                </style>                
+            </div>
         </div>
         
         <!--
@@ -583,8 +663,9 @@
         // Returns: The formatted phone number string.
         // --------------------------------------------------
         function formatPhoneNumber(value) {
+            console.log('formatPhoneNumber called with:', value);
             if (!value) return value;
-            const phoneNumber = value.replace(/[^\d]/g, ''); // Remove non-digit chars.
+            const phoneNumber = String(value).replace(/[^\d]/g, ''); // Remove non-digit chars.
             const phoneNumberLength = phoneNumber.length;
             if (phoneNumberLength < 4) return phoneNumber;
             if (phoneNumberLength < 7) {
@@ -592,7 +673,7 @@
             }
             return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
         }
-
+    
         // --------------------------------------------------
         // Function: searchAllCalls
         // Purpose: Logs a message for demo purposes indicating it is searching.
@@ -601,7 +682,7 @@
         function searchAllCalls(phoneNumber) {
             console.log(`Searching for calls with phone number: ${phoneNumber}`);
             $.ajax({
-                url: 'callscreen_getcalls.php',
+                url: 'callscreen_getcalls2.php',
                 type: 'GET',
                 data: {
                     number: phoneNumber
@@ -614,13 +695,13 @@
                     console.log('AJAX error:', status, error);
                 }
             });
-
+    
             function searchCallsResults(data) {
                 console.log('Search results:', data);
                 // Clear any existing results inside the Call Log tab content area
                 document.getElementById('caller_id_name').value = '';
                 $("#callHistory").empty();
-
+    
                 // Create a collapsibleset container to hold the collapsible items
                 let collapsibleSet = $('<div data-role="collapsibleset" data-theme="a" data-content-theme="a"></div>');
                 
